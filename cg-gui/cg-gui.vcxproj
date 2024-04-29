@@ -120,6 +120,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glu32.lib;GLFW\glfw3.lib;glew\glew32.lib;OpenMesh\OpenMeshCored.lib;OpenMesh\OpenMeshToolsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>copy "$(SolutionDir)dll\*" "$(OutputPath)"
+xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>複製dll、res</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>NO_OUTPUT</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -137,6 +147,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glu32.lib;GLFW\glfw3.lib;glew\glew32.lib;OpenMesh\OpenMeshCore.lib;OpenMesh\OpenMeshTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>copy "$(SolutionDir)dll\*" "$(OutputPath)"
+xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>複製dll、res</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>NO_OUTPUT</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\include\imgui\backends\imgui_impl_glfw.cpp" />
