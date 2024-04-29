@@ -26,6 +26,10 @@ namespace CG
     private:
         void Update(double dt);
         void Render();
+        /**
+         * ³]©w mainWindow ªº callback
+         */
+        void SetupWindowCallBack();
 
     private:
         GLFWwindow* mainWindow;

@@ -42,11 +42,15 @@ namespace CG
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 		// Create window with graphics context
-		mainWindow = glfwCreateWindow(1280, 720, "cg-gui", nullptr, nullptr);
+		constexpr int INITIAL_WIDTH = 1280;
+		constexpr int INITIAL_HEIGHT = 720;
+		mainWindow = glfwCreateWindow(INITIAL_WIDTH, INITIAL_HEIGHT, "cg-gui", nullptr, nullptr);
 		if (mainWindow == nullptr)
 			return false;
 		glfwMakeContextCurrent(mainWindow);
 		glfwSwapInterval(1); // Enable vsync
+
+		this->SetupWindowCallBack();
 
 		// Initialize GLEW
 		glewExperimental = GL_TRUE;
@@ -72,32 +76,12 @@ namespace CG
 		ImGui_ImplGlfw_InitForOpenGL(mainWindow, true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
-		glfwSetWindowUserPointer(mainWindow, this);
-		glfwSetFramebufferSizeCallback(
-			mainWindow,
-			[](GLFWwindow* window, int w, int h)
-			{
-				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
-				auto mainScene = app->GetMainScene();
-				mainScene->OnResize(w, h);
-			}
-		);
-
-		glfwSetKeyCallback(
-			mainWindow,
-			[](GLFWwindow* window, int key, int scancode, int action, int mode)
-			{
-				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
-				auto mainScene = app->GetMainScene();
-				mainScene->OnKeyboard(key, action);
-			}
-		);
-
 		controlWindow = new ControlWindow();
 		controlWindow->Initialize();
 
 		mainScene = new MainScene();
 		mainScene->Initialize();
+		mainScene->OnResize(INITIAL_WIDTH, INITIAL_HEIGHT);
 
 		controlWindow->SetTargetScene(mainScene);
 
@@ -179,5 +163,30 @@ namespace CG
 		glViewport(0, 0, display_w, display_h);
 
 		mainScene->Render();
+	}
+
+
+	void App::SetupWindowCallBack()
+	{
+		glfwSetWindowUserPointer(mainWindow, this);
+		glfwSetFramebufferSizeCallback(
+			mainWindow,
+			[](GLFWwindow* window, int w, int h)
+			{
+				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+				auto mainScene = app->GetMainScene();
+				mainScene->OnResize(w, h);
+			}
+		);
+
+		glfwSetKeyCallback(
+			mainWindow,
+			[](GLFWwindow* window, int key, int scancode, int action, int mode)
+			{
+				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+				auto mainScene = app->GetMainScene();
+				mainScene->OnKeyboard(key, action);
+			}
+		);
 	}
 }
