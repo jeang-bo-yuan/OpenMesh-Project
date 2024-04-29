@@ -87,8 +87,8 @@ namespace CG
 	{
 #pragma region Phong Shader
 		ShaderInfo shadersPhong[] = {
-			{ GL_VERTEX_SHADER, "./res/shaders/DSPhong_Material.vp" },//vertex shader
-			{ GL_FRAGMENT_SHADER, "./res/shaders/DSPhong_Material.fp" },//fragment shader
+			{ GL_VERTEX_SHADER, "./res/shaders/DSPhong_Material.vert" },//vertex shader
+			{ GL_FRAGMENT_SHADER, "./res/shaders/DSPhong_Material.frag" },//fragment shader
 			{ GL_NONE, NULL } };
 		programPhong = LoadShaders(shadersPhong);//Åª¨úshader
 
@@ -103,8 +103,8 @@ namespace CG
 
 #pragma region Line Shader
 		ShaderInfo shadersLine[] = {
-			{ GL_VERTEX_SHADER, "./res/shaders/line.vp" },//vertex shader
-			{ GL_FRAGMENT_SHADER, "./res/shaders/line.fp" },//fragment shader
+			{ GL_VERTEX_SHADER, "./res/shaders/line.vert" },//vertex shader
+			{ GL_FRAGMENT_SHADER, "./res/shaders/line.frag" },//fragment shader
 			{ GL_NONE, NULL } };
 		programLine = LoadShaders(shadersLine);//Åª¨úshader
 

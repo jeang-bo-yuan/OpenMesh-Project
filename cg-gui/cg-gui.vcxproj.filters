@@ -100,4 +100,10 @@
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\shaders\DSPhong_Material.frag" />
+    <None Include="..\res\shaders\DSPhong_Material.vert" />
+    <None Include="..\res\shaders\line.frag" />
+    <None Include="..\res\shaders\line.vert" />
+  </ItemGroup>
 </Project>

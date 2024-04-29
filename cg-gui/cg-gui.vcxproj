@@ -187,6 +187,12 @@ xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
     <ClInclude Include="..\src\Utilty\LoadShaders.h" />
     <ClInclude Include="..\src\Window\ControlWindow.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\shaders\DSPhong_Material.frag" />
+    <None Include="..\res\shaders\DSPhong_Material.vert" />
+    <None Include="..\res\shaders\line.frag" />
+    <None Include="..\res\shaders\line.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
