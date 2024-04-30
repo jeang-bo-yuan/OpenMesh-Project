@@ -21,6 +21,9 @@ namespace CG
             return view;
         }
 
+        const glm::vec3 GetRight() { return right_dir; }
+        const glm::vec3 GetFront() { return front_dir; }
+
         void SetFov(float degree)
         {
             fov = degree;
@@ -65,6 +68,16 @@ namespace CG
             UpdateViewMatrix();
         }
 
+        /**
+         * 改變中心的位置
+         * \param translate - 平移
+         */
+        void changeCenter(glm::vec3 translate) {
+            center += translate;
+
+            UpdateViewMatrix();
+        }
+
     private:
         void UpdateProjectionMatrix();
         void UpdateViewMatrix();
@@ -72,6 +85,9 @@ namespace CG
     private:
         glm::mat4 projection;
         glm::mat4 view;
+
+        glm::vec3 right_dir; ///< 右方
+        glm::vec3 front_dir; ///< 前方（投影到xz平面）
 
         float fov;
         float aspect;

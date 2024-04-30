@@ -44,7 +44,30 @@ namespace CG
 
 	void MainScene::OnKeyboard(int key, int action)
 	{
-		std::cout << "MainScene OnKeyboard: " << key << " " << action << std::endl;		
+		std::cout << "MainScene OnKeyboard: " << key << " " << action << std::endl;
+
+		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+			constexpr float move_speed = 0.01f;
+
+			if (key == GLFW_KEY_W) {
+				camera->changeCenter(move_speed * camera->GetFront());
+			}
+			else if (key == GLFW_KEY_S) {
+				camera->changeCenter(-move_speed * camera->GetFront());
+			}
+			else if (key == GLFW_KEY_A) {
+				camera->changeCenter(-move_speed * camera->GetRight());
+			}
+			else if (key == GLFW_KEY_D) {
+				camera->changeCenter(move_speed * camera->GetRight());
+			}
+			else if (key == GLFW_KEY_Q) {
+				camera->changeCenter(glm::vec3(0, move_speed, 0));
+			}
+			else if (key == GLFW_KEY_E) {
+				camera->changeCenter(glm::vec3(0, -move_speed, 0));
+			}
+		}
 	}
 
 	void MainScene::OnCursorMove(double xpos, double ypos)
@@ -71,7 +94,7 @@ namespace CG
 					//std::cout << "(deltaYaw, deltaPitch) = (" << xoffset << ", " << yoffset << ")" << std::endl;
 
 					// 轉動相機
-					camera->changeYawPitch(xoffset, yoffset);
+					camera->changeYawPitch(static_cast<float>(xoffset), static_cast<float>(yoffset));
 
 					// 記下鼠標位置
 					std::get<0>(m_state_data).lastCursorPos = glm::dvec2(xpos, ypos);
