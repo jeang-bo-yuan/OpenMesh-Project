@@ -34,6 +34,8 @@ namespace CG
 	void MainScene::OnResize(int width, int height)
 	{
 		std::cout << "MainScene Resize: " << width << " " << height << std::endl;
+		if (width == 0 || height == 0) return;
+		camera->SetAspect((float)width / height);
 	}
 
 	void MainScene::OnKeyboard(int key, int action)
