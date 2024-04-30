@@ -11,8 +11,6 @@ namespace CG
         Camera();
         ~Camera();
 
-        void LookAt(glm::vec3 eye, glm::vec3 center, glm::vec3 up);
-
         auto GetProjectionMatrix() -> const glm::mat4
         {
             return projection;
@@ -45,8 +43,21 @@ namespace CG
             UpdateProjectionMatrix();
         }
 
+        /**
+         * 讓 Yaw 和 Pitch 加上某個值
+         * \param deltaYaw - yaw 的變化量
+         * \param deltaPitch - pitch 的變化量
+         */
+        void changeYawPitch(float deltaYaw, float deltaPitch) {
+            yaw += deltaYaw;
+            pitch += deltaPitch;
+
+            UpdateViewMatrix();
+        }
+
     private:
         void UpdateProjectionMatrix();
+        void UpdateViewMatrix();
 
     private:
         glm::mat4 projection;
@@ -56,5 +67,10 @@ namespace CG
         float aspect;
         float clipNear;
         float clipFar;
+
+        float yaw;  ///< 水平旋轉角（弧度制）
+        float pitch; ///< 鉛直旋轉角（弧度制）
+        float distance; ///< 眼睛距中心多遠
+        glm::vec3 center; ///< camera注視的中心位置
     };
 }

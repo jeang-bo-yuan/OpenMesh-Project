@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include <iostream>
+
 namespace CG
 {
     Camera::Camera()
@@ -12,7 +14,13 @@ namespace CG
         clipNear = 0.01f;
         clipFar = 1000.0f;
 
+        yaw = glm::pi<float>() / 2.f;
+        pitch = 0.f;
+        center = glm::vec3(0, 0, 0);
+        distance = 1.f;
+
         UpdateProjectionMatrix();
+        UpdateViewMatrix();
     }
 
     Camera::~Camera()
@@ -20,13 +28,24 @@ namespace CG
 
     }
 
-    void Camera::LookAt(glm::vec3 eye, glm::vec3 center, glm::vec3 up)
-    {
-        view = glm::lookAt(eye, center, up);
-    }
-
     void Camera::UpdateProjectionMatrix()
     {
         projection = glm::perspective(glm::radians(fov), aspect, clipNear, clipFar);
+    }
+
+    void Camera::UpdateViewMatrix()
+    {
+        // pitch 不能超出 正負pi/2的範圍
+        pitch = glm::clamp(pitch, -glm::pi<float>() / 2.f + 0.00001f, glm::pi<float>() / 2.f - 0.00001f);
+
+        //std::cout << "(yaw, pitch) = (" << yaw << ", " << pitch << ")" << std::endl;
+
+        // 從中心點指向相機的向量
+        glm::vec3 dir(
+            distance * cosf(pitch) * cosf(yaw),
+            distance * sinf(pitch),
+            distance * cosf(pitch) * sinf(yaw)
+        );
+        view = glm::lookAt(center + dir, center, glm::vec3(0, 1, 0));
     }
 }

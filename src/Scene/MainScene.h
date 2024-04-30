@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <variant>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -16,6 +17,17 @@ constexpr auto PARTSNUM = 18;
 
 namespace CG
 {
+	enum class State {
+		RotateCamera,  //!< 可以旋轉相機
+	};
+
+	//! 當 State == RotateCamera 時的資料
+	struct RotateCameraData {
+		bool rotating = false;
+		bool recordCursor = false;
+		glm::dvec2 lastCursorPos;
+	};
+
 	class MainScene
 	{
 	public:
@@ -26,13 +38,27 @@ namespace CG
 		void Update(double dt);
 		void Render();
 
+		//! 當改變視窗大小
 		void OnResize(int width, int height);
+		//! 當按下鍵盤
 		void OnKeyboard(int key, int action);
+		//! 當滑鼠移動，參數的座標以「左上角」為原點
+		//! @param xpos - x座標（最左方為0）
+		//! @param ypos - y座標（最上方為0）
+		void OnCursorMove(double xpos, double ypos);
+		//! 當點擊滑鼠
+		//! @param button - 按下的滑鼠按鍵
+		//! @param action - GLFW_PRESS or GLFW_RELEASE
+		//! @param mods - modifier keys
+		void OnMouse(int button, int action, int mods);
 
 	private:
 		auto LoadScene() -> bool;
 
 	private:
+		State m_current_state = State::RotateCamera;
+		std::variant<RotateCameraData> m_state_data;
+
 		Camera* camera;
 
 		MyMesh* mesh;

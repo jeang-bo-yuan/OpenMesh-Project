@@ -188,5 +188,23 @@ namespace CG
 				mainScene->OnKeyboard(key, action);
 			}
 		);
+
+		glfwSetCursorPosCallback(
+			mainWindow,
+			[](GLFWwindow* window, double xpos, double ypos) {
+				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+				auto mainScene = app->GetMainScene();
+				mainScene->OnCursorMove(xpos, ypos);
+			}
+		);
+
+		glfwSetMouseButtonCallback(
+			mainWindow,
+			[](GLFWwindow* window, int button, int action, int mods) {
+				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+				auto mainScene = app->GetMainScene();
+				mainScene->OnMouse(button, action, mods);
+			}
+		);
 	}
 }
