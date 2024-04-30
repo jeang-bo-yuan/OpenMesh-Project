@@ -41,6 +41,11 @@ namespace CG
 
 	void MyMesh::Render(const glm::mat4 proj, const glm::mat4 view)
 	{
+		// update UBO
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrix_UBO);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(proj));
+
 #pragma region Solid Rendering
 		glUseProgram(programPhong);
 		glBindVertexArray(sVAO);
@@ -49,12 +54,6 @@ namespace CG
 		glUniform3fv(pMatKaID, 1, &colorAmbient[0]);
 		glUniform3fv(pMatKdID, 1, &colorDiffuse[0]);
 		glUniform3fv(pMatKsID, 1, &colorSpecular[0]);
-
-		// update data to UBO for MVP
-		glBindBuffer(GL_UNIFORM_BUFFER, sUBO);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &view);
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &proj);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// Draw solid mesh
 		glDrawArrays(GL_TRIANGLES, 0, this->n_faces() * 3);
@@ -66,12 +65,6 @@ namespace CG
 
 		glUniformMatrix4fv(lModelID, 1, GL_FALSE, &model[0][0]);
 		glUniform3fv(lMatKdID, 1, &colorLine[0]);
-
-		// update data to UBO for MVP
-		glBindBuffer(GL_UNIFORM_BUFFER, wUBO);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &view);
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &proj);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		glLineWidth(1.5f);
 		// Draw wireframe mesh
@@ -115,19 +108,20 @@ namespace CG
 		lMatKdID = glGetUniformLocation(programLine, "Material.Kd");
 #pragma endregion
 
+		// UBO
+		glGenBuffers(1, &matrix_UBO);
+		glBindBuffer(GL_UNIFORM_BUFFER, matrix_UBO);
+		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 #pragma region Solid Rendering
 		glGenVertexArrays(1, &sVAO);
 		glBindVertexArray(sVAO);
 
-		// UBO
-		glGenBuffers(1, &sUBO);
-		glBindBuffer(GL_UNIFORM_BUFFER, sUBO);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, NULL, GL_DYNAMIC_DRAW);
 		// get uniform struct size
 		int sUBOsize = 0;
 		glGetActiveUniformBlockiv(programPhong, pMatVPID, GL_UNIFORM_BLOCK_DATA_SIZE, &sUBOsize);
-		// bind UBO to its idx
-		glBindBufferRange(GL_UNIFORM_BUFFER, 0, sUBO, 0, sUBOsize);
+		// set up binding point
 		glUniformBlockBinding(programPhong, pMatVPID, 0);
 
 		// triangle vertex index
@@ -173,15 +167,10 @@ namespace CG
 		glGenVertexArrays(1, &wVAO);
 		glBindVertexArray(wVAO);
 
-		// UBO
-		glGenBuffers(1, &wUBO);
-		glBindBuffer(GL_UNIFORM_BUFFER, wUBO);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, NULL, GL_DYNAMIC_DRAW);
 		// get uniform struct size
 		int wUBOsize = 0;
 		glGetActiveUniformBlockiv(programLine, lMatVPID, GL_UNIFORM_BLOCK_DATA_SIZE, &wUBOsize);
-		// bind UBO to its idx
-		glBindBufferRange(GL_UNIFORM_BUFFER, 0, wUBO, 0, wUBOsize);
+		// set up binding point
 		glUniformBlockBinding(programLine, lMatVPID, 0);
 
 		// triangle vertex index

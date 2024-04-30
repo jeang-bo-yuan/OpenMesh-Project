@@ -40,17 +40,19 @@ namespace CG
 		glm::vec3 d2f(OpenMesh::Vec3d v);
 
 	private:
+		/// layout(std140, binding = 0)
+		/// ¥]§t view matrix ©M proj matrix
+		GLuint matrix_UBO;
+
 		/* Buffers for solid rendering */
 		GLuint sVAO;
 		GLuint sVBOp;
 		GLuint sVBOn;
-		GLuint sUBO;
 
 		/* Buffers for wireframe rendering */
 		GLuint wVAO;
 		GLuint wVBOp;
 		GLuint wVBOn;
-		GLuint wUBO;
 
 		/* Phong shader */
 		GLuint programPhong;
