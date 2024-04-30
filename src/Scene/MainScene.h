@@ -51,6 +51,10 @@ namespace CG
 		//! @param action - GLFW_PRESS or GLFW_RELEASE
 		//! @param mods - modifier keys
 		void OnMouse(int button, int action, int mods);
+		//! 當滑鼠滾輪滾動
+		//! @param xoffset - 水平滾動
+		//! @param yoffset - 鉛直滾動
+		void OnScroll(double xoffset, double yoffset);
 
 	private:
 		auto LoadScene() -> bool;

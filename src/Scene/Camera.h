@@ -55,6 +55,16 @@ namespace CG
             UpdateViewMatrix();
         }
 
+        /**
+         * 讓 distance 加上某個值
+         * \param deltaDistance - 變化量
+         */
+        void changeDistance(float deltaDistance) {
+            distance += deltaDistance;
+
+            UpdateViewMatrix();
+        }
+
     private:
         void UpdateProjectionMatrix();
         void UpdateViewMatrix();

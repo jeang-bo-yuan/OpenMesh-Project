@@ -206,5 +206,14 @@ namespace CG
 				mainScene->OnMouse(button, action, mods);
 			}
 		);
+
+		glfwSetScrollCallback(
+			mainWindow,
+			[](GLFWwindow* window, double xoffset, double yoffset) {
+				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+				auto mainScene = app->GetMainScene();
+				mainScene->OnScroll(xoffset, yoffset);
+			}
+		);
 	}
 }

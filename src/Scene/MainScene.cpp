@@ -97,6 +97,11 @@ namespace CG
 		}
 	}
 
+	void MainScene::OnScroll(double xoffset, double yoffset)
+	{
+		camera->changeDistance(static_cast<float>(yoffset * 0.01));
+	}
+
 	auto MainScene::LoadScene() -> bool
 	{
 		camera = new Camera();

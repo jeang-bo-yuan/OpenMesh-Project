@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include <iostream>
+#include <algorithm>
 
 namespace CG
 {
@@ -37,6 +38,8 @@ namespace CG
     {
         // pitch 不能超出 正負pi/2的範圍
         pitch = glm::clamp(pitch, -glm::pi<float>() / 2.f + 0.00001f, glm::pi<float>() / 2.f - 0.00001f);
+        // distance 不能小於等於0
+        distance = std::max(0.001f, distance);
 
         //std::cout << "(yaw, pitch) = (" << yaw << ", " << pitch << ")" << std::endl;
 
