@@ -9,6 +9,7 @@
 namespace CG
 {
 	ControlWindow::ControlWindow()
+		: targetScene(nullptr), selectedState(0)
 	{
 		showDemoWindow = false;
 	}
@@ -23,6 +24,21 @@ namespace CG
 		ImGui::Begin("Control");
 		{
 			ImGui::Checkbox("Demo Window", &showDemoWindow);
+			ImGui::NewLine();
+
+			const char* StateName[] = { "Rotate Camera", "Select Face"};
+			selectedState = (int)targetScene->GetState();
+			ImGui::Text("Left Mouse: %s", StateName[selectedState]);
+
+			ImGui::RadioButton("Rotate Camera(1)", &selectedState, (int)State::RotateCamera);
+			ImGui::RadioButton("Select Face(2)", &selectedState, (int)State::SelectFace);
+			targetScene->SetState((State)selectedState);
+
+			ImGui::NewLine();
+			if (ImGui::CollapsingHeader("Tutorial")) {
+				ImGui::Text("WASD - move camera   Q - move up");
+				ImGui::Text("E - move down        Scroll - Zoom in/out");
+			}
 		}
 		ImGui::End();
 

@@ -19,6 +19,7 @@ namespace CG
 {
 	enum class State {
 		RotateCamera,  //!< 可以旋轉相機
+		SelectFace, //!< 可以選面
 	};
 
 	class MainScene
@@ -30,6 +31,9 @@ namespace CG
 		auto Initialize() -> bool;
 		void Update(double dt);
 		void Render();
+
+		State GetState() const { return m_current_state; }
+		void SetState(State new_state) { m_current_state = new_state; }
 
 		//! 當改變視窗大小
 		void OnResize(int width, int height);

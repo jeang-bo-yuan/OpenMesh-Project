@@ -66,6 +66,15 @@ namespace CG
 				camera->changeCenter(glm::vec3(0, -move_speed, 0));
 			}
 		}
+
+		if (action == GLFW_PRESS) {
+			if (key == GLFW_KEY_1) {
+				this->SetState(State::RotateCamera);
+			}
+			else if (key == GLFW_KEY_2) {
+				this->SetState(State::SelectFace);
+			}
+		}
 	}
 
 	void MainScene::OnCursorMove(float xpos, float ypos)

@@ -194,7 +194,10 @@ namespace CG
 			[](GLFWwindow* window, double xpos, double ypos) {
 				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 				auto mainScene = app->GetMainScene();
-				mainScene->OnCursorMove((float)xpos, (float)ypos);
+
+				ImGuiIO& io = ImGui::GetIO();
+				if (!io.WantCaptureMouse)
+					mainScene->OnCursorMove((float)xpos, (float)ypos);
 			}
 		);
 
@@ -203,7 +206,10 @@ namespace CG
 			[](GLFWwindow* window, int button, int action, int mods) {
 				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 				auto mainScene = app->GetMainScene();
-				mainScene->OnMouse(button, action, mods);
+
+				ImGuiIO& io = ImGui::GetIO();
+				if (!io.WantCaptureMouse)
+					mainScene->OnMouse(button, action, mods);
 			}
 		);
 
@@ -212,7 +218,10 @@ namespace CG
 			[](GLFWwindow* window, double xoffset, double yoffset) {
 				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 				auto mainScene = app->GetMainScene();
-				mainScene->OnScroll(xoffset, yoffset);
+
+				ImGuiIO& io = ImGui::GetIO();
+				if (!io.WantCaptureMouse)
+					mainScene->OnScroll(xoffset, yoffset);
 			}
 		);
 	}

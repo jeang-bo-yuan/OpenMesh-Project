@@ -14,6 +14,7 @@ namespace CG
 
 	private:
 		bool showDemoWindow;
+		int selectedState;
 
 	private:
 		MainScene* targetScene;
