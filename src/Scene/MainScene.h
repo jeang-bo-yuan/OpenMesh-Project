@@ -21,13 +21,6 @@ namespace CG
 		RotateCamera,  //!< 可以旋轉相機
 	};
 
-	//! 當 State == RotateCamera 時的資料
-	struct RotateCameraData {
-		bool rotating = false;
-		bool recordCursor = false;
-		glm::dvec2 lastCursorPos;
-	};
-
 	class MainScene
 	{
 	public:
@@ -45,7 +38,7 @@ namespace CG
 		//! 當滑鼠移動，參數的座標以「左上角」為原點
 		//! @param xpos - x座標（最左方為0）
 		//! @param ypos - y座標（最上方為0）
-		void OnCursorMove(double xpos, double ypos);
+		void OnCursorMove(float xpos, float ypos);
 		//! 當點擊滑鼠
 		//! @param button - 按下的滑鼠按鍵
 		//! @param action - GLFW_PRESS or GLFW_RELEASE
@@ -60,8 +53,11 @@ namespace CG
 		auto LoadScene() -> bool;
 
 	private:
+		bool m_leftMouse; //!< 左鍵是否按下
+		bool m_rightMouse; //!< 右鍵是否按下
+		glm::vec2 m_lastCursorPos; //!< 上次鼠標的位置
+
 		State m_current_state = State::RotateCamera;
-		std::variant<RotateCameraData> m_state_data;
 
 		Camera* camera;
 

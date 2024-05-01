@@ -194,7 +194,7 @@ namespace CG
 			[](GLFWwindow* window, double xpos, double ypos) {
 				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 				auto mainScene = app->GetMainScene();
-				mainScene->OnCursorMove(xpos, ypos);
+				mainScene->OnCursorMove((float)xpos, (float)ypos);
 			}
 		);
 

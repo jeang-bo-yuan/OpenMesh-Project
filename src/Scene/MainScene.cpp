@@ -5,12 +5,10 @@
 namespace CG
 {
 	MainScene::MainScene()
+		: m_leftMouse(false), m_rightMouse(false), m_lastCursorPos()
 	{
 		camera = nullptr;
 		mesh = nullptr;
-
-		assert(std::get<0>(m_state_data).rotating == false);
-		assert(std::get<0>(m_state_data).recordCursor == false);
 	}
 
 	MainScene::~MainScene()
@@ -70,53 +68,33 @@ namespace CG
 		}
 	}
 
-	void MainScene::OnCursorMove(double xpos, double ypos)
+	void MainScene::OnCursorMove(float xpos, float ypos)
 	{
 		switch (m_current_state) {
-
 		case State::RotateCamera:
-			// 在旋轉中
-			if (std::get<0>(m_state_data).rotating) {
-				// 準備階段
-				if (std::get<0>(m_state_data).recordCursor) {
-					std::cout << "MainScene: Start Rotating Camera" << std::endl;
+			if (m_leftMouse) {
+				float xoffset = glm::radians(xpos - m_lastCursorPos.x);
+				float yoffset = glm::radians(ypos - m_lastCursorPos.y);
 
-					// 記下鼠標位置
-					std::get<0>(m_state_data).lastCursorPos = glm::dvec2(xpos, ypos);
-					// 跳離準備階段
-					std::get<0>(m_state_data).recordCursor = false;
-				}
-				else {
-					double xoffset = xpos - std::get<0>(m_state_data).lastCursorPos.x;
-					double yoffset = ypos - std::get<0>(m_state_data).lastCursorPos.y;
-					xoffset = glm::radians(xoffset);
-					yoffset = glm::radians(yoffset);
-					//std::cout << "(deltaYaw, deltaPitch) = (" << xoffset << ", " << yoffset << ")" << std::endl;
-
-					// 轉動相機
-					camera->changeYawPitch(static_cast<float>(xoffset), static_cast<float>(yoffset));
-
-					// 記下鼠標位置
-					std::get<0>(m_state_data).lastCursorPos = glm::dvec2(xpos, ypos);
-				}
+				camera->changeYawPitch(xoffset, yoffset);
 			}
 			break;
-
 		}
+
+		m_lastCursorPos.x = xpos;
+		m_lastCursorPos.y = ypos;
 	}
 	
 	void MainScene::OnMouse(int button, int action, int mods)
 	{
-		switch (m_current_state) {
-
-		case State::RotateCamera:
-			if (button == GLFW_MOUSE_BUTTON_LEFT) {
-				bool button_press = (action == GLFW_PRESS);
-				std::get<0>(m_state_data).rotating = button_press;
-				std::get<0>(m_state_data).recordCursor = button_press;
-			}
+		switch (button) {
+		case GLFW_MOUSE_BUTTON_LEFT:
+			m_leftMouse = (action == GLFW_PRESS);
 			break;
 
+		case GLFW_MOUSE_BUTTON_RIGHT:
+			m_rightMouse = (action == GLFW_PRESS);
+			break;
 		}
 	}
 
