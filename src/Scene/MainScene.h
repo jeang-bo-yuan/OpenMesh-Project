@@ -56,6 +56,11 @@ namespace CG
 	private:
 		auto LoadScene() -> bool;
 
+		/**
+		 * 建立 FBO 和 UBO
+		 */
+		void CreateBuffers();
+
 		void SelectFaceWithMouse();
 
 	private:
@@ -73,6 +78,9 @@ namespace CG
 			GLuint color_texture = 0;
 			GLuint depth_rbo = 0;
 		} m_faceID_fbo;  //!< 將每個面的index畫在R channel
+
+		/// binding = 0, matrix UBO (mat4 view, mat4 proj)
+		GLuint m_matrix_UBO = 0;
 		
 		Camera* camera;
 

@@ -26,11 +26,10 @@ namespace CG
 
 		bool LoadFromFile(std::string filename);
 
-		void Render(const glm::mat4 proj, const glm::mat4 view);
+		void Render();
 
 		/**
-		 * 繪製每一面的 index
-		 * Do not update projection and view matrix
+		 * 繪製每一面，顏色的 R channel 為面的 index
 		 */
 		void RenderFaceID();
 
@@ -47,10 +46,6 @@ namespace CG
 		glm::vec3 d2f(OpenMesh::Vec3d v);
 
 	private:
-		/// layout(std140, binding = 0)
-		/// 包含 view matrix 和 proj matrix
-		GLuint matrix_UBO;
-
 		/* Buffers for solid rendering */
 		GLuint sVAO;
 		GLuint sVBOp;

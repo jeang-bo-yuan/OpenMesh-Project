@@ -47,6 +47,7 @@ namespace CG
 				glDebugMessageControl(source​, type​, GL_DONT_CARE, 1, &id​, GL_FALSE);
 		}, nullptr);
 
+		CreateBuffers();
 		return LoadScene();
 	}
 
@@ -57,11 +58,17 @@ namespace CG
 
 	void MainScene::Render()
 	{
+		// update UBO
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_matrix_UBO);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(camera->GetViewMatrix()));
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera->GetProjectionMatrix()));
+
 		glClearColor(0.0, 0.0, 0.0, 1); //black screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		mesh->Render(camera->GetProjectionMatrix(), camera->GetViewMatrix());
+		mesh->Render();
 
+		// 繪製每一面的ID
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_faceID_fbo.name);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -200,14 +207,23 @@ namespace CG
 		glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
 		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 
-		// create FBO
-		glGenFramebuffers(1, &m_faceID_fbo.name);
-		glGenTextures(1, &m_faceID_fbo.color_texture);
-
 		mesh = new MyMesh();
 		mesh->LoadFromFile("./res/models/xyzrgb_dragon_100k.obj");
 		
 		return true;
+	}
+
+	void MainScene::CreateBuffers()
+	{
+		// create FBO
+		glGenFramebuffers(1, &m_faceID_fbo.name);
+		glGenTextures(1, &m_faceID_fbo.color_texture);
+
+		// create UBO
+		glGenBuffers(1, &m_matrix_UBO);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_matrix_UBO);
+		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
 	void MainScene::SelectFaceWithMouse()

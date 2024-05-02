@@ -40,13 +40,8 @@ namespace CG
 		return isRead;
 	}
 
-	void MyMesh::Render(const glm::mat4 proj, const glm::mat4 view)
+	void MyMesh::Render()
 	{
-		// update UBO
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrix_UBO);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(proj));
-
 #pragma region Solid Rendering
 		glUseProgram(programPhong);
 		glBindVertexArray(sVAO);
@@ -79,8 +74,6 @@ namespace CG
 
 	void MyMesh::RenderFaceID()
 	{
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrix_UBO);
-		
 		glBindVertexArray(sVAO);
 		glUseProgram(programFaceID);
 		glUniformMatrix4fv(programFaceID_model, 1, GL_FALSE, &model[0][0]);
@@ -94,12 +87,6 @@ namespace CG
 
 	void MyMesh::CreateBuffers()
 	{
-		// UBO
-		glGenBuffers(1, &matrix_UBO);
-		glBindBuffer(GL_UNIFORM_BUFFER, matrix_UBO);
-		glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
 #pragma region Solid Rendering
 		glGenVertexArrays(1, &sVAO);
 		glBindVertexArray(sVAO);
