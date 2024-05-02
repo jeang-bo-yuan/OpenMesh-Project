@@ -149,6 +149,9 @@ namespace CG
 			else if (key == GLFW_KEY_2) {
 				this->SetState(State::SelectFace);
 			}
+			else if (key == GLFW_KEY_3) {
+				this->SetState(State::UnselectFace);
+			}
 		}
 	}
 
@@ -164,9 +167,9 @@ namespace CG
 			}
 			break;
 
-		case State::SelectFace:
+		case State::SelectFace: case State::UnselectFace:
 			if (m_leftMouse)
-				SelectFaceWithMouse();
+				SelectFaceWithMouse(m_current_state == State::SelectFace);
 			break;
 		}
 
@@ -180,8 +183,8 @@ namespace CG
 		case GLFW_MOUSE_BUTTON_LEFT:
 			m_leftMouse = (action == GLFW_PRESS);
 			if (m_leftMouse) {
-				if (m_current_state == State::SelectFace)
-					SelectFaceWithMouse();
+				if (m_current_state == State::SelectFace || m_current_state == State::UnselectFace)
+					SelectFaceWithMouse(m_current_state == State::SelectFace);
 			}
 			break;
 
@@ -226,7 +229,7 @@ namespace CG
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	void MainScene::SelectFaceWithMouse()
+	void MainScene::SelectFaceWithMouse(bool selected)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_faceID_fbo.name);
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
@@ -242,7 +245,7 @@ namespace CG
 		
 		if (faceID != 0) {
 			std::cout << "MainScene: (" << pixelX << ',' << pixelY << ") is Face " << faceID << std::endl;
-			mesh->SelectFace(faceID - 1, true);
+			mesh->SelectFace(faceID - 1, selected);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

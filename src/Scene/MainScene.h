@@ -20,6 +20,7 @@ namespace CG
 	enum class State {
 		RotateCamera,  //!< 可以旋轉相機
 		SelectFace, //!< 可以選面
+		UnselectFace, //!< 可以取消選取面
 	};
 
 	class MainScene
@@ -61,7 +62,11 @@ namespace CG
 		 */
 		void CreateBuffers();
 
-		void SelectFaceWithMouse();
+		/**
+		 * 依據 m_lastCursorPos 的位置選取or取消選取面
+		 * \param selected - 是否選取
+		 */
+		void SelectFaceWithMouse(bool selected);
 
 	private:
 		bool m_leftMouse; //!< 左鍵是否按下

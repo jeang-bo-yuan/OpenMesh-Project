@@ -26,12 +26,13 @@ namespace CG
 			ImGui::Checkbox("Demo Window", &showDemoWindow);
 			ImGui::NewLine();
 
-			const char* StateName[] = { "Rotate Camera", "Select Face"};
+			const char* StateName[] = { "Rotate Camera", "Select Face", "Unselect Face"};
 			selectedState = (int)targetScene->GetState();
 			ImGui::Text("Left Mouse: %s", StateName[selectedState]);
 
 			ImGui::RadioButton("Rotate Camera(1)", &selectedState, (int)State::RotateCamera);
 			ImGui::RadioButton("Select Face(2)", &selectedState, (int)State::SelectFace);
+			ImGui::RadioButton("Unselect Face(3)", &selectedState, (int)State::UnselectFace);
 			targetScene->SetState((State)selectedState);
 
 			ImGui::NewLine();
