@@ -29,11 +29,19 @@ namespace CG
 		void Render();
 
 		/**
-		 * 繪製每一面，顏色的 R channel 為面的 index
+		 * 繪製每一面，顏色的 R channel 為面的ID (ID = 陣列中的index + 1)
 		 */
 		void RenderFaceID();
 
+		/**
+		 * 選取或取消選取某一面
+		 * \param face_index - 這個面在陣列中的index
+		 * \param selected - 是否被選中（非0 -> 選取，0 -> 取消選取）
+		 */
+		void SelectFace(GLuint face_index, int selected);
+
 	private:
+		// 生成buffer
 		void CreateBuffers();
 		void CreateShaders();
 		
@@ -46,6 +54,10 @@ namespace CG
 		glm::vec3 d2f(OpenMesh::Vec3d v);
 
 	private:
+		/* Shader Storage Buffer Objects */
+		/// 用來儲存哪個面有被選中的SSBO，包含 n_faces() 個 int
+		GLuint selectedSSBO;
+
 		/* Buffers for solid rendering */
 		GLuint sVAO;
 		GLuint sVBOp;

@@ -17,8 +17,13 @@ vec4 ambientColor  = vec4(0.1,0.1,0.1,1);
 vec4 diffuseColor  = vec4(0.8,0.8,0.8,1);   
 vec4 specularColor = vec4(1,1,1,1);
 
+layout(std430, binding = 0) buffer selectedSSBO {
+    int face_selected[];
+};
+
 in vec3 vVaryingNormal;
 in vec3 vVaryingLightDir;
+flat in uint vFaceIndex;
 
 float Shininess = 128.0;//for material specular
 
@@ -39,6 +44,11 @@ void main(void)
     if(diff != 0) {
 		spec = pow(spec, Shininess);
 		vFragColor += specularColor * vec4(Material.Ka, 1) * spec;
+    }
+
+    if (face_selected[vFaceIndex] != 0) {
+        // blend with red color, if the face is selected
+        vFragColor = 0.5 * vFragColor +  vec4(0.5, 0, 0, 0.5);
     }
 }
 	

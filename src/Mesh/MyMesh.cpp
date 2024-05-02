@@ -45,6 +45,8 @@ namespace CG
 #pragma region Solid Rendering
 		glUseProgram(programPhong);
 		glBindVertexArray(sVAO);
+		// 繪製實心模型時需要是否被選中的資訊，以調整顯示的顏色
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, selectedSSBO);
 
 		glUniformMatrix4fv(pModelID, 1, GL_FALSE, &model[0][0]);
 		glUniform3fv(pMatKaID, 1, &colorAmbient[0]);
@@ -53,6 +55,7 @@ namespace CG
 
 		// Draw solid mesh
 		glDrawArrays(GL_TRIANGLES, 0, this->n_faces() * 3);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
 #pragma endregion
 
 #pragma region Wireframe Rendering
@@ -83,6 +86,13 @@ namespace CG
 
 		glBindVertexArray(0);
 		glUseProgram(0);
+	}
+
+	void MyMesh::SelectFace(GLuint face_index, int selected)
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, selectedSSBO);
+		glBufferSubData(GL_SHADER_STORAGE_BUFFER, face_index * sizeof(int), 1, &selected);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
 	void MyMesh::CreateBuffers()
@@ -131,6 +141,13 @@ namespace CG
 		glBufferData(GL_ARRAY_BUFFER, face_normals.size() * sizeof(glm::vec3), glm::value_ptr(face_normals[0]), GL_STATIC_DRAW);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(1);
+
+		// selected faces ssbo
+		glGenBuffers(1, &selectedSSBO);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, selectedSSBO);
+		// 每個面一個int
+		glBufferData(GL_SHADER_STORAGE_BUFFER, this->n_faces() * sizeof(int), NULL, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);

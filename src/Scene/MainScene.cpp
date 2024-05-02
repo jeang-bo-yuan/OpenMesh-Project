@@ -240,7 +240,10 @@ namespace CG
 		// solution: https://stackoverflow.com/a/55141849/20876404
 		glReadPixels(pixelX, pixelY, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &faceID);
 		
-		std::cout << "MainScene: (" << pixelX << ',' << pixelY << ") is Face " << faceID << std::endl;
+		if (faceID != 0) {
+			std::cout << "MainScene: (" << pixelX << ',' << pixelY << ") is Face " << faceID << std::endl;
+			mesh->SelectFace(faceID - 1, true);
+		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
