@@ -40,6 +40,12 @@ namespace CG
 		 */
 		void SelectFace(GLuint face_index, int selected);
 
+		/**
+		 * 取消選取任何面
+		 * @todo 實作選點後要新增取消選點的功能
+		 */
+		void UnselectAll();
+
 	private:
 		// 生成buffer
 		void CreateBuffers();

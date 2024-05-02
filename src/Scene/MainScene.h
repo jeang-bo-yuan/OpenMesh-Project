@@ -54,6 +54,8 @@ namespace CG
 		//! @param yoffset - ¹]ª½ºu°Ê
 		void OnScroll(double xoffset, double yoffset);
 
+		void UnselectAll() { mesh->UnselectAll(); }
+
 	private:
 		auto LoadScene() -> bool;
 

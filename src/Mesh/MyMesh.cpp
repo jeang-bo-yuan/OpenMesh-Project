@@ -95,6 +95,13 @@ namespace CG
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
+	void MyMesh::UnselectAll()
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, selectedSSBO);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, n_faces() * sizeof(int), NULL, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	}
+
 	void MyMesh::CreateBuffers()
 	{
 #pragma region Solid Rendering

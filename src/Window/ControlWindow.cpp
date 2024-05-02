@@ -24,6 +24,7 @@ namespace CG
 		ImGui::Begin("Control");
 		{
 			ImGui::Checkbox("Demo Window", &showDemoWindow);
+			if (ImGui::Button("Unselect All")) targetScene->UnselectAll();
 			ImGui::NewLine();
 
 			const char* StateName[] = { "Rotate Camera", "Select Face", "Unselect Face"};
@@ -32,7 +33,7 @@ namespace CG
 
 			ImGui::RadioButton("Rotate Camera(1)", &selectedState, (int)State::RotateCamera);
 			ImGui::RadioButton("Select Face(2)", &selectedState, (int)State::SelectFace);
-			ImGui::RadioButton("Unselect Face(3)", &selectedState, (int)State::UnselectFace);
+			ImGui::SameLine(170);  ImGui::RadioButton("Unselect Face(3)", &selectedState, (int)State::UnselectFace);
 			targetScene->SetState((State)selectedState);
 
 			ImGui::NewLine();
