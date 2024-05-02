@@ -56,6 +56,8 @@ namespace CG
 	private:
 		auto LoadScene() -> bool;
 
+		void SelectFaceWithMouse();
+
 	private:
 		bool m_leftMouse; //!< 左鍵是否按下
 		bool m_rightMouse; //!< 右鍵是否按下
@@ -63,6 +65,15 @@ namespace CG
 
 		State m_current_state = State::RotateCamera;
 
+		int m_width = 0;
+		int m_height = 0;
+		
+		struct {
+			GLuint name = 0;
+			GLuint color_texture = 0;
+			GLuint depth_rbo = 0;
+		} m_faceID_fbo;  //!< 將每個面的index畫在R channel
+		
 		Camera* camera;
 
 		MyMesh* mesh;

@@ -33,6 +33,7 @@ namespace CG
 				this->update_normals();
 			}
 
+			CreateShaders();
 			CreateBuffers();
 		}
 
@@ -76,38 +77,23 @@ namespace CG
 		glUseProgram(0);
 	}
 
+	void MyMesh::RenderFaceID()
+	{
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, matrix_UBO);
+		
+		glBindVertexArray(sVAO);
+		glUseProgram(programFaceID);
+		glUniformMatrix4fv(programFaceID_model, 1, GL_FALSE, &model[0][0]);
+
+		// Draw solid mesh
+		glDrawArrays(GL_TRIANGLES, 0, this->n_faces() * 3);
+
+		glBindVertexArray(0);
+		glUseProgram(0);
+	}
+
 	void MyMesh::CreateBuffers()
 	{
-#pragma region Phong Shader
-		ShaderInfo shadersPhong[] = {
-			{ GL_VERTEX_SHADER, "./res/shaders/DSPhong_Material.vert" },//vertex shader
-			{ GL_FRAGMENT_SHADER, "./res/shaders/DSPhong_Material.frag" },//fragment shader
-			{ GL_NONE, NULL } };
-		programPhong = LoadShaders(shadersPhong);//弄shader
-
-		glUseProgram(programPhong);//uniform把计计玡ゲ斗use shader
-
-		pMatVPID = glGetUniformBlockIndex(programPhong, "MatVP");
-		pModelID = glGetUniformLocation(programPhong, "Model");
-		pMatKaID = glGetUniformLocation(programPhong, "Material.Ka");
-		pMatKdID = glGetUniformLocation(programPhong, "Material.Kd");
-		pMatKsID = glGetUniformLocation(programPhong, "Material.Ks");
-#pragma endregion
-
-#pragma region Line Shader
-		ShaderInfo shadersLine[] = {
-			{ GL_VERTEX_SHADER, "./res/shaders/line.vert" },//vertex shader
-			{ GL_FRAGMENT_SHADER, "./res/shaders/line.frag" },//fragment shader
-			{ GL_NONE, NULL } };
-		programLine = LoadShaders(shadersLine);//弄shader
-
-		glUseProgram(programLine);//uniform把计计玡ゲ斗use shader
-
-		lMatVPID = glGetUniformBlockIndex(programLine, "MatVP");
-		lModelID = glGetUniformLocation(programLine, "Model");
-		lMatKdID = glGetUniformLocation(programLine, "Material.Kd");
-#pragma endregion
-
 		// UBO
 		glGenBuffers(1, &matrix_UBO);
 		glBindBuffer(GL_UNIFORM_BUFFER, matrix_UBO);
@@ -199,6 +185,50 @@ namespace CG
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+#pragma endregion
+	}
+
+	void MyMesh::CreateShaders()
+	{
+#pragma region Phong Shader
+		ShaderInfo shadersPhong[] = {
+			{ GL_VERTEX_SHADER, "./res/shaders/DSPhong_Material.vert" },//vertex shader
+			{ GL_FRAGMENT_SHADER, "./res/shaders/DSPhong_Material.frag" },//fragment shader
+			{ GL_NONE, NULL } };
+		programPhong = LoadShaders(shadersPhong);//弄shader
+
+		glUseProgram(programPhong);//uniform把计计玡ゲ斗use shader
+
+		pMatVPID = glGetUniformBlockIndex(programPhong, "MatVP");
+		pModelID = glGetUniformLocation(programPhong, "Model");
+		pMatKaID = glGetUniformLocation(programPhong, "Material.Ka");
+		pMatKdID = glGetUniformLocation(programPhong, "Material.Kd");
+		pMatKsID = glGetUniformLocation(programPhong, "Material.Ks");
+#pragma endregion
+
+#pragma region Line Shader
+		ShaderInfo shadersLine[] = {
+			{ GL_VERTEX_SHADER, "./res/shaders/line.vert" },//vertex shader
+			{ GL_FRAGMENT_SHADER, "./res/shaders/line.frag" },//fragment shader
+			{ GL_NONE, NULL } };
+		programLine = LoadShaders(shadersLine);//弄shader
+
+		glUseProgram(programLine);//uniform把计计玡ゲ斗use shader
+
+		lMatVPID = glGetUniformBlockIndex(programLine, "MatVP");
+		lModelID = glGetUniformLocation(programLine, "Model");
+		lMatKdID = glGetUniformLocation(programLine, "Material.Kd");
+#pragma endregion
+
+#pragma region Face ID Shader
+		ShaderInfo shaderFaceID[] = {
+			{ GL_VERTEX_SHADER, "./res/shaders/face_id.vert"},
+			{ GL_FRAGMENT_SHADER, "./res/shaders/face_id.frag"},
+			{ GL_NONE, NULL } };
+		programFaceID = LoadShaders(shaderFaceID);
+
+		glUseProgram(programFaceID);
+		programFaceID_model = glGetUniformLocation(programFaceID, "Model");
 #pragma endregion
 	}
 

@@ -105,5 +105,7 @@
     <None Include="..\res\shaders\DSPhong_Material.vert" />
     <None Include="..\res\shaders\line.frag" />
     <None Include="..\res\shaders\line.vert" />
+    <None Include="..\res\shaders\face_id.vert" />
+    <None Include="..\res\shaders\face_id.frag" />
   </ItemGroup>
 </Project>

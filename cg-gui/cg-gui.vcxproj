@@ -192,6 +192,8 @@ xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
   <ItemGroup>
     <None Include="..\res\shaders\DSPhong_Material.frag" />
     <None Include="..\res\shaders\DSPhong_Material.vert" />
+    <None Include="..\res\shaders\face_id.frag" />
+    <None Include="..\res\shaders\face_id.vert" />
     <None Include="..\res\shaders\line.frag" />
     <None Include="..\res\shaders\line.vert" />
   </ItemGroup>

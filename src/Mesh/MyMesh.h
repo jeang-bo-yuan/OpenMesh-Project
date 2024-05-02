@@ -28,8 +28,15 @@ namespace CG
 
 		void Render(const glm::mat4 proj, const glm::mat4 view);
 
+		/**
+		 * 繪製每一面的 index
+		 * Do not update projection and view matrix
+		 */
+		void RenderFaceID();
+
 	private:
 		void CreateBuffers();
+		void CreateShaders();
 		
 		// halfedge, face, and vertex normals
 		OpenMesh::Vec3d normal(const HalfedgeHandle he) const;
@@ -67,6 +74,10 @@ namespace CG
 		GLuint lMatVPID;
 		GLuint lModelID;
 		GLuint lMatKdID;
+
+		/* Face ID shader */
+		GLuint programFaceID;
+		GLuint programFaceID_model; //!< uniform location of "model" in program Face ID
 
 		/* Model properties */
 		glm::mat4 model;
