@@ -1,4 +1,6 @@
 #include <OpenMesh/Core/IO/MeshIO.hh>
+#include <limits>
+#include <glm/gtx/string_cast.hpp>
 
 #include "MyMesh.h"
 #include <Utilty/LoadShaders.h>
@@ -32,6 +34,10 @@ namespace CG
 			{
 				this->update_normals();
 			}
+			std::cout << "Load Mesh Successfully"
+				<< "\nFaces: " << n_faces()
+				<< "\nEdges: " << n_edges() 
+				<< "\nVertices: " << n_vertices() << std::endl;
 
 			CreateShaders();
 			CreateBuffers();
@@ -70,6 +76,15 @@ namespace CG
 		glDrawArrays(GL_LINES, 0, this->n_edges() * 2);
 #pragma endregion
 
+		if (selectedPoint.has_value()) {
+			// draw point
+			glBindVertexArray(0);
+			glUseProgram(programSelectDot);
+			MyMesh::Point p = point(*selectedPoint);
+			glVertexAttrib3f(0, p[0], p[1], p[2]);
+			glDrawArrays(GL_POINTS, 0, 1);
+		}
+
 		// Unbind shader and VAO
 		glBindVertexArray(0);
 		glUseProgram(0);
@@ -88,6 +103,37 @@ namespace CG
 		glUseProgram(0);
 	}
 
+	void MyMesh::SelectPoint(glm::vec3 position, GLuint face_index)
+	{
+		assert(face_index < n_faces());
+		MyMesh::FaceHandle face = this->face_handle(face_index);
+		MyMesh::FaceVertexIter it = this->fv_iter(face);
+		
+		float nearest_dist = std::numeric_limits<float>::max();
+		// iterate all points of the face
+		while (it.is_valid()) {
+			MyMesh::Point tmp1 = point(*it);
+			
+			glm::vec3 curr(tmp1[0], tmp1[1], tmp1[2]);
+
+			// find the nearest point
+			float distance = glm::distance(position, curr);
+			if (distance < nearest_dist) {
+				nearest_dist = distance;
+				selectedPoint = (*it);
+			}
+#ifndef NDEBUG
+			std::cout << "\t[] candidate: " << tmp1 << " distance = " << distance << std::endl;
+#endif
+			++it;
+		}
+
+#ifndef NDEBUG
+		std::cout << "\t[] Position: " << glm::to_string(position) << ", Face: " << face_index << std::endl;
+		std::cout << "[] Point Selected: " << point(*selectedPoint) << std::endl;
+#endif
+	}
+
 	void MyMesh::SelectFace(GLuint face_index, int selected)
 	{
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, selectedSSBO);
@@ -97,6 +143,8 @@ namespace CG
 
 	void MyMesh::UnselectAll()
 	{
+		this->UnselectPoint();
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, selectedSSBO);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, n_faces() * sizeof(int), NULL, GL_DYNAMIC_DRAW);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -240,6 +288,15 @@ namespace CG
 
 		glUseProgram(programFaceID);
 		programFaceID_model = glGetUniformLocation(programFaceID, "Model");
+#pragma endregion
+
+#pragma region Select Dot Shader
+		ShaderInfo shaderSelectDot[] = {
+			{ GL_VERTEX_SHADER, "./res/shaders/select_dot.vert" },
+			{ GL_FRAGMENT_SHADER, "./res/shaders/select_dot.frag" },
+			{ GL_NONE, NULL }
+		};
+		programSelectDot = LoadShaders(shaderSelectDot);
 #pragma endregion
 	}
 

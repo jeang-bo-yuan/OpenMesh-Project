@@ -19,6 +19,7 @@ namespace CG
 {
 	enum class State {
 		RotateCamera,  //!< 可以旋轉相機
+		SelectVertex, //!< 可以選擇頂點
 		SelectFace, //!< 可以選面
 		UnselectFace, //!< 可以取消選取面
 	};
@@ -65,10 +66,28 @@ namespace CG
 		void CreateBuffers();
 
 		/**
+		 * 取得鼠標在哪個面上
+		 * @return 面的ID（0 -> 背景）
+		 */
+		GLuint MouseOnWhichFace();
+
+		/**
+		 * 取得鼠標在Screen Space中的座標
+		 */
+		glm::vec2 GetCursorWinPos() { 
+			return glm::vec2(m_lastCursorPos.x, m_height - m_lastCursorPos.y); // GLFW中最上方為0，但OpenGL最下方為0
+		}
+
+		/**
 		 * 依據 m_lastCursorPos 的位置選取or取消選取面
 		 * \param selected - 是否選取
 		 */
 		void SelectFaceWithMouse(bool selected);
+
+		/**
+		 * 依據 m_lastCursorPos 的位置選取or取消選取點
+		 */
+		void SelectPointWithMouse();
 
 	private:
 		bool m_leftMouse; //!< 左鍵是否按下
@@ -82,7 +101,7 @@ namespace CG
 		
 		struct {
 			GLuint name = 0;
-			GLuint color_texture = 0;
+			GLuint color_texture = 0; //!< 內容： GL_R32UI
 			GLuint depth_rbo = 0;
 		} m_faceID_fbo;  //!< 將每個面的index畫在R channel
 

@@ -3,6 +3,7 @@
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <optional>
 
 namespace CG
 {
@@ -34,6 +35,18 @@ namespace CG
 		void RenderFaceID();
 
 		/**
+		 * 選擇面上最靠近position的點
+		 * \param position - 提示點的位置
+		 * \param face_index - 選擇哪個面上的點
+		 */
+		void SelectPoint(glm::vec3 position, GLuint face_index);
+
+		/**
+		 * 取消選擇點
+		 */
+		void UnselectPoint() { selectedPoint = std::nullopt; }
+
+		/**
 		 * 選取或取消選取某一面
 		 * \param face_index - 這個面在陣列中的index
 		 * \param selected - 是否被選中（非0 -> 選取，0 -> 取消選取）
@@ -41,8 +54,7 @@ namespace CG
 		void SelectFace(GLuint face_index, int selected);
 
 		/**
-		 * 取消選取任何面
-		 * @todo 實作選點後要新增取消選點的功能
+		 * 取消選取任何面和點
 		 */
 		void UnselectAll();
 
@@ -60,6 +72,9 @@ namespace CG
 		glm::vec3 d2f(OpenMesh::Vec3d v);
 
 	private:
+		/// 哪個點被選中了，std::nullopt -> 沒有
+		std::optional<MyMesh::VertexHandle> selectedPoint;
+
 		/* Shader Storage Buffer Objects */
 		/// 用來儲存哪個面有被選中的SSBO，包含 n_faces() 個 int
 		GLuint selectedSSBO;
@@ -91,6 +106,9 @@ namespace CG
 		/* Face ID shader */
 		GLuint programFaceID;
 		GLuint programFaceID_model; //!< uniform location of "model" in program Face ID
+
+		/* select dot shader */
+		GLuint programSelectDot;
 
 		/* Model properties */
 		glm::mat4 model;

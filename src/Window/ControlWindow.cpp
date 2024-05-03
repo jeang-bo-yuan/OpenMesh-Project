@@ -27,13 +27,14 @@ namespace CG
 			if (ImGui::Button("Unselect All")) targetScene->UnselectAll();
 			ImGui::NewLine();
 
-			const char* StateName[] = { "Rotate Camera", "Select Face", "Unselect Face"};
+			const char* StateName[] = { "Rotate Camera", "Select Vertex", "Select Face", "Unselect Face"};
 			selectedState = (int)targetScene->GetState();
 			ImGui::Text("Left Mouse: %s", StateName[selectedState]);
 
 			ImGui::RadioButton("Rotate Camera(1)", &selectedState, (int)State::RotateCamera);
-			ImGui::RadioButton("Select Face(2)", &selectedState, (int)State::SelectFace);
-			ImGui::SameLine(170);  ImGui::RadioButton("Unselect Face(3)", &selectedState, (int)State::UnselectFace);
+			ImGui::SameLine(170);  ImGui::RadioButton("Select Vertex(2)", &selectedState, (int)State::SelectVertex);
+			ImGui::RadioButton("Select Face(3)", &selectedState, (int)State::SelectFace);
+			ImGui::SameLine(170);  ImGui::RadioButton("Unselect Face(4)", &selectedState, (int)State::UnselectFace);
 			targetScene->SetState((State)selectedState);
 
 			ImGui::NewLine();

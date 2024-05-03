@@ -61,6 +61,10 @@
     <Filter Include="Mesh">
       <UniqueIdentifier>{2f701d65-109f-4217-baa5-0f8832182c90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{d74de621-abec-49d6-b3a8-7f962ccedde7}</UniqueIdentifier>
+      <Extensions>vert;frag</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\App\App.h">
@@ -101,11 +105,29 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\res\shaders\DSPhong_Material.frag" />
-    <None Include="..\res\shaders\DSPhong_Material.vert" />
-    <None Include="..\res\shaders\line.frag" />
-    <None Include="..\res\shaders\line.vert" />
-    <None Include="..\res\shaders\face_id.vert" />
-    <None Include="..\res\shaders\face_id.frag" />
+    <None Include="..\res\shaders\DSPhong_Material.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\DSPhong_Material.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\face_id.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\face_id.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\line.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\line.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\select_dot.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\select_dot.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

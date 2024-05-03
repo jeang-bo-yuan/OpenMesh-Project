@@ -101,6 +101,7 @@ namespace CG
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
 		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_faceID_fbo.depth_rbo);
 
+#ifndef NDEBUG
 		// check FBO
 		if (glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
 			std::cout << "FBO is complete" << std::endl;
@@ -108,6 +109,7 @@ namespace CG
 		else {
 			std::cout << "FBO is NOT complete : " << glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) << std::endl;
 		}
+#endif
 		
 		// unbind
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -117,7 +119,9 @@ namespace CG
 
 	void MainScene::OnKeyboard(int key, int action)
 	{
+#ifndef NDEBUG
 		std::cout << "MainScene OnKeyboard: " << key << " " << action << std::endl;
+#endif
 
 		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
 			constexpr float move_speed = 0.01f;
@@ -147,9 +151,12 @@ namespace CG
 				this->SetState(State::RotateCamera);
 			}
 			else if (key == GLFW_KEY_2) {
-				this->SetState(State::SelectFace);
+				this->SetState(State::SelectVertex);
 			}
 			else if (key == GLFW_KEY_3) {
+				this->SetState(State::SelectFace);
+			}
+			else if (key == GLFW_KEY_4) {
 				this->SetState(State::UnselectFace);
 			}
 		}
@@ -182,9 +189,16 @@ namespace CG
 		switch (button) {
 		case GLFW_MOUSE_BUTTON_LEFT:
 			m_leftMouse = (action == GLFW_PRESS);
+			// 若左鍵有按下
 			if (m_leftMouse) {
-				if (m_current_state == State::SelectFace || m_current_state == State::UnselectFace)
+				// 選面
+				if (m_current_state == State::SelectFace || m_current_state == State::UnselectFace) {
 					SelectFaceWithMouse(m_current_state == State::SelectFace);
+				}
+				// 選點
+				else if (m_current_state == State::SelectVertex) {
+					SelectPointWithMouse();
+				}
 			}
 			break;
 
@@ -206,6 +220,7 @@ namespace CG
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glEnable(GL_MULTISAMPLE);
+		glEnable(GL_PROGRAM_POINT_SIZE);
 		glDepthMask(GL_TRUE);
 		glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
 		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
@@ -229,25 +244,54 @@ namespace CG
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	void MainScene::SelectFaceWithMouse(bool selected)
+	GLuint MainScene::MouseOnWhichFace()
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_faceID_fbo.name);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_faceID_fbo.name);
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
 		glViewport(0, 0, m_width, m_height);
 
-		GLint pixelX = GLint(m_lastCursorPos.x);
-		GLint pixelY = m_height - GLint(m_lastCursorPos.y); // GLFW中最上方為0，但OpenGL最下方為0
+		glm::vec2 winPos = GetCursorWinPos();
 
-		GLuint faceID = 0;
+		GLuint ID = 0;
 		// 圾垃 reference，竟然沒說要用GL_RED_INTEGER才能從integer texture讀像素，害我Debug 3小時
 		// solution: https://stackoverflow.com/a/55141849/20876404
-		glReadPixels(pixelX, pixelY, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &faceID);
+		glReadPixels(winPos.x, winPos.y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &ID);
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		return ID;
+	}
+
+	void MainScene::SelectFaceWithMouse(bool selected)
+	{
+		GLuint faceID = MouseOnWhichFace();
 		
 		if (faceID != 0) {
-			std::cout << "MainScene: (" << pixelX << ',' << pixelY << ") is Face " << faceID << std::endl;
+#ifndef NDEBUG
+			std::cout << "MainScene Face: " << faceID << std::endl;
+#endif
 			mesh->SelectFace(faceID - 1, selected);
 		}
+	}
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	void MainScene::SelectPointWithMouse()
+	{
+		GLuint faceID = MouseOnWhichFace();
+		
+		if (faceID == 0) {
+			mesh->UnselectPoint();
+		}
+		else {
+			glm::vec2 winPos = GetCursorWinPos();
+			GLfloat depth = 0;
+			glReadPixels(winPos.x, winPos.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+
+			// Unproject cursorPos to world pos
+			glm::vec3 world_pos = glm::unProject(glm::vec3(winPos.x, winPos.y, depth), // win pos
+				camera->GetViewMatrix(), 
+				camera->GetProjectionMatrix(), 
+				glm::vec4(0, 0, m_width, m_height)); // viewport
+
+			mesh->SelectPoint(world_pos, faceID - 1);
+		}
 	}
 }
