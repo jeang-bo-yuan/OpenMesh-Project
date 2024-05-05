@@ -172,6 +172,8 @@ xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
     <ClCompile Include="..\src\Mesh\MyMesh.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />
     <ClCompile Include="..\src\Scene\MainScene.cpp" />
+    <ClCompile Include="..\src\Scene\SelectionRegion.cpp" />
+    <ClCompile Include="..\src\Utilty\LoadShaders.cpp" />
     <ClCompile Include="..\src\Window\ControlWindow.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -186,6 +188,7 @@ xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
     <ClInclude Include="..\src\Mesh\MyMesh.h" />
     <ClInclude Include="..\src\Scene\Camera.h" />
     <ClInclude Include="..\src\Scene\MainScene.h" />
+    <ClInclude Include="..\src\Scene\SelectionRegion.h" />
     <ClInclude Include="..\src\Utilty\LoadShaders.h" />
     <ClInclude Include="..\src\Window\ControlWindow.h" />
   </ItemGroup>
@@ -196,6 +199,8 @@ xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
     <None Include="..\res\shaders\face_id.vert" />
     <None Include="..\res\shaders\line.frag" />
     <None Include="..\res\shaders\line.vert" />
+    <None Include="..\res\shaders\region.frag" />
+    <None Include="..\res\shaders\region.vert" />
     <None Include="..\res\shaders\select_dot.frag" />
     <None Include="..\res\shaders\select_dot.vert" />
   </ItemGroup>

@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Camera.h"
+#include "SelectionRegion.h"
 #include <Mesh/MyMesh.h>
 
 constexpr auto PARTSNUM = 18;
@@ -22,6 +23,7 @@ namespace CG
 		SelectVertex, //!< 可以選擇頂點
 		SelectFace, //!< 可以選面
 		UnselectFace, //!< 可以取消選取面
+		RegionSelectFace, //!< 範圍選取
 	};
 
 	class MainScene
@@ -79,6 +81,11 @@ namespace CG
 		}
 
 		/**
+		 * 取得鼠標在NDC座標系中的位置
+		 */
+		glm::vec2 GetCursorNDCPos();
+
+		/**
 		 * 依據 m_lastCursorPos 的位置選取or取消選取面
 		 * \param selected - 是否選取
 		 */
@@ -90,6 +97,7 @@ namespace CG
 		void SelectPointWithMouse();
 
 	private:
+		bool m_renderAndSelectInRegion = false; //!< 當為true，繪製選取範圍並選取
 		bool m_leftMouse; //!< 左鍵是否按下
 		bool m_rightMouse; //!< 右鍵是否按下
 		glm::vec2 m_lastCursorPos; //!< 上次鼠標的位置
@@ -111,6 +119,8 @@ namespace CG
 		Camera* camera;
 
 		MyMesh* mesh;
+
+		SelectionRegion m_selection_region;
 	};
 }
 

@@ -75,6 +75,16 @@ namespace CG
 		mesh->RenderFaceID();
 
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+		// 繪製選取範圍
+		if (m_current_state == State::RegionSelectFace && m_leftMouse) {
+			m_selection_region.Render(GetCursorNDCPos());
+		}
+		if (m_renderAndSelectInRegion) {
+			std::cout << "Select in region" << std::endl;
+			m_selection_region.RenderAndSelect(GetCursorNDCPos(), m_faceID_fbo.color_texture, mesh->GetSelectedSSBO());
+			m_renderAndSelectInRegion = false;
+		}
 	}
 
 	void MainScene::OnResize(int width, int height)
@@ -115,6 +125,8 @@ namespace CG
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		m_selection_region.SetViewport(width, height);
 	}
 
 	void MainScene::OnKeyboard(int key, int action)
@@ -159,6 +171,9 @@ namespace CG
 			else if (key == GLFW_KEY_4) {
 				this->SetState(State::UnselectFace);
 			}
+			else if (key == GLFW_KEY_5) {
+				this->SetState(State::RegionSelectFace);
+			}
 		}
 	}
 
@@ -200,6 +215,17 @@ namespace CG
 					SelectPointWithMouse();
 				}
 			}
+
+			// 範圍選取
+			if (m_current_state == State::RegionSelectFace) {
+				if (m_leftMouse) {
+					m_selection_region.SetRegionStart(GetCursorNDCPos());
+				}
+				else {
+					// 鬆開滑鼠時要選取
+					m_renderAndSelectInRegion = true;
+				}
+			}
 			break;
 
 		case GLFW_MOUSE_BUTTON_RIGHT:
@@ -219,6 +245,7 @@ namespace CG
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_MULTISAMPLE);
 		glEnable(GL_PROGRAM_POINT_SIZE);
 		glDepthMask(GL_TRUE);
@@ -259,6 +286,18 @@ namespace CG
 
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 		return ID;
+	}
+
+	glm::vec2 MainScene::GetCursorNDCPos()
+	{
+		glm::vec2 result = GetCursorWinPos();
+		float half_width = m_width / 2.f;
+		float half_height = m_height / 2.f;
+
+		result.x = (result.x - half_width) / half_width;
+		result.y = (result.y - half_height) / half_height;
+
+		return result;
 	}
 
 	void MainScene::SelectFaceWithMouse(bool selected)

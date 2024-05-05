@@ -25,6 +25,8 @@ namespace CG
 		MyMesh();
 		~MyMesh();
 
+		GLuint GetSelectedSSBO() { return selectedSSBO; }
+
 		bool LoadFromFile(std::string filename);
 
 		void Render();
