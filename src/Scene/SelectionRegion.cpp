@@ -30,12 +30,13 @@ void SelectionRegion::Render(glm::vec2 RegionEnd)
 	glUseProgram(0);
 }
 
-void SelectionRegion::RenderAndSelect(glm::vec2 RegionEnd, GLuint IDtexture, GLuint selectedSSBO)
+void SelectionRegion::RenderAndSelect(glm::vec2 RegionEnd, GLuint IDtexture, GLuint selectedSSBO, int output)
 {
 	glUseProgram(m_region_program);
 	glUniform2fv(glGetUniformLocation(m_region_program, "regionStart"), 1, glm::value_ptr(m_region_start));
 	glUniform2fv(glGetUniformLocation(m_region_program, "regionEnd"), 1, glm::value_ptr(RegionEnd));
 	glUniform1i(glGetUniformLocation(m_region_program, "selectFace"), GL_TRUE);
+	glUniform1i(glGetUniformLocation(m_region_program, "SSBOoutput"), output);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, IDtexture);

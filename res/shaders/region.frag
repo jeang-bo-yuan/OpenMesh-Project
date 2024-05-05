@@ -3,6 +3,8 @@
 uniform vec2 viewport;
 // true -> select face this time
 uniform bool selectFace;
+// output what value to SSBO
+uniform int SSBOoutput;
 // where to fetch ID
 layout(binding = 0) uniform usampler2D IDtexture;
 
@@ -21,7 +23,7 @@ void main() {
 		uint ID = texture(IDtexture, texCoord).r;
 
 		if (ID != 0) {
-			face_selected[ID - 1] = 1;
+			face_selected[ID - 1] = SSBOoutput;
 		}
 	}
 

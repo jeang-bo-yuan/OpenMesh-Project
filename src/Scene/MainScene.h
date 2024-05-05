@@ -24,6 +24,7 @@ namespace CG
 		SelectFace, //!< 可以選面
 		UnselectFace, //!< 可以取消選取面
 		RegionSelectFace, //!< 範圍選取
+		RegionUnselectFace, //!< 範圍取消選取
 	};
 
 	class MainScene

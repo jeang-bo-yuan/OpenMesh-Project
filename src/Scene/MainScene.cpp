@@ -77,12 +77,13 @@ namespace CG
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 		// 繪製選取範圍
-		if (m_current_state == State::RegionSelectFace && m_leftMouse) {
+		if ((m_current_state == State::RegionSelectFace || m_current_state == State::RegionUnselectFace)
+			&& m_leftMouse) {
 			m_selection_region.Render(GetCursorNDCPos());
 		}
 		if (m_renderAndSelectInRegion) {
 			std::cout << "Select in region" << std::endl;
-			m_selection_region.RenderAndSelect(GetCursorNDCPos(), m_faceID_fbo.color_texture, mesh->GetSelectedSSBO());
+			m_selection_region.RenderAndSelect(GetCursorNDCPos(), m_faceID_fbo.color_texture, mesh->GetSelectedSSBO(), m_current_state == State::RegionSelectFace);
 			m_renderAndSelectInRegion = false;
 		}
 	}
@@ -174,6 +175,9 @@ namespace CG
 			else if (key == GLFW_KEY_5) {
 				this->SetState(State::RegionSelectFace);
 			}
+			else if (key == GLFW_KEY_6) {
+				this->SetState(State::RegionUnselectFace);
+			}
 		}
 	}
 
@@ -217,7 +221,7 @@ namespace CG
 			}
 
 			// 範圍選取
-			if (m_current_state == State::RegionSelectFace) {
+			if (m_current_state == State::RegionSelectFace || m_current_state == State::RegionUnselectFace) {
 				if (m_leftMouse) {
 					m_selection_region.SetRegionStart(GetCursorNDCPos());
 				}

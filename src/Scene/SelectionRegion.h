@@ -33,9 +33,10 @@ public:
 	/**
 	 * 繪製 + 選取
 	 * \param RegionEnd - 範圍的終點（in NDC coordinate）
-	 * \param IDtexture - 從這個texture讀ID
-	 * \param selectedSSBO - 若選中則在對應index設成true
+	 * \param IDtexture - 從這個texture讀ID（index + 1）
+	 * \param selectedSSBO - 若選中則在對應index的位置設成output
+	 * \param output - 如果被選中，那麼要在SSBO中存什麼值
 	 */
-	void RenderAndSelect(glm::vec2 RegionEnd, GLuint IDtexture, GLuint selectedSSBO);
+	void RenderAndSelect(glm::vec2 RegionEnd, GLuint IDtexture, GLuint selectedSSBO, int output);
 };
 
