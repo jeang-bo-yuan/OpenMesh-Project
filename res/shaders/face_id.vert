@@ -7,7 +7,7 @@ layout(std140, binding = 0) uniform MatrixBlock {
 } Matrix;
 uniform mat4 Model;
 
-out uint vsFaceID;
+flat out uint vsFaceID;
 
 void main() {
 	mat4 MVP = Matrix.proj * Matrix.view * Model;

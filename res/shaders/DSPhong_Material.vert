@@ -19,7 +19,7 @@ uniform mat4 Model;
 out vec3 vVaryingNormal;
 out vec3 vVaryingLightDir;
 // output face's index, you can use index to lookup the array
-out uint vFaceIndex;
+flat out uint vFaceIndex;
 
 void main(void) 
 { 

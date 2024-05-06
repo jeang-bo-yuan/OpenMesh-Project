@@ -145,8 +145,13 @@ namespace CG
 	{
 		this->UnselectPoint();
 
+		// 取消選面
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, selectedSSBO);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, n_faces() * sizeof(int), NULL, GL_DYNAMIC_DRAW);
+		int* buffer = reinterpret_cast<int*>(glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY));
+		for (size_t i = 0; i < n_faces(); ++i) {
+			buffer[i] = 0;
+		}
+		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
