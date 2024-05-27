@@ -64,6 +64,8 @@ namespace CG
 		// 生成buffer
 		void CreateBuffers();
 		void CreateShaders();
+		//! 計算每條邊的權重並存在edge property中的"weight"
+		void CaculateEdgeWeight();
 		
 		// halfedge, face, and vertex normals
 		OpenMesh::Vec3d normal(const HalfedgeHandle he) const;

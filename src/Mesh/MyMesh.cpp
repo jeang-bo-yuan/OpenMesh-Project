@@ -41,6 +41,7 @@ namespace CG
 
 			CreateShaders();
 			CreateBuffers();
+			CaculateEdgeWeight();
 		}
 
 		return isRead;
@@ -303,6 +304,32 @@ namespace CG
 		};
 		programSelectDot = LoadShaders(shaderSelectDot);
 #pragma endregion
+	}
+
+	void MyMesh::CaculateEdgeWeight()
+	{
+		auto weight = OpenMesh::EProp<float>(*this, "weight");
+
+		// for each edge
+		for (auto edge_it = this->edges_sbegin(); edge_it != this->edges_end(); ++edge_it) {
+			float angle[2] = { 0.f, 0.f };
+			int i = 0;
+
+			// circulate two "halfedge" around the edge
+			for (auto eh_it = this->eh_iter(*edge_it); eh_it.is_valid(); ++eh_it) {
+				OpenMesh::Vec3d A = point(from_vertex_handle(*eh_it));
+				OpenMesh::Vec3d B = point(to_vertex_handle(*eh_it));
+				OpenMesh::Vec3d C = point(opposite_vh(*eh_it));
+
+				OpenMesh::Vec3d CB = B - C, CA = A - C;
+				// 角度 = CB向量 和 CA向量 的夾角
+				angle[i] = std::acos(OpenMesh::dot(CB, CA) / CB.length() / CA.length());
+				++i;
+			}
+
+			// weight = cot(angle[0]) + cot(angle[1])
+			weight[*edge_it] = 1.f / std::tan(angle[0]) + 1.f / std::tan(angle[1]);
+		}
 	}
 
 	OpenMesh::Vec3d MyMesh::normal(const HalfedgeHandle he) const
