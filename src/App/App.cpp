@@ -188,7 +188,10 @@ namespace CG
 			{
 				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 				auto mainScene = app->GetMainScene();
-				mainScene->OnKeyboard(key, action);
+
+				ImGuiIO& io = ImGui::GetIO();
+				if (!io.WantCaptureKeyboard)
+					mainScene->OnKeyboard(key, action);
 			}
 		);
 
