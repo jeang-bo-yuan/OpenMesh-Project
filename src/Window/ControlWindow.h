@@ -2,6 +2,7 @@
 
 #include <Scene/MainScene.h>
 #include <string>
+#include <Mesh/TextureManager.h>
 
 namespace CG
 {
@@ -17,6 +18,11 @@ namespace CG
 		bool showDemoWindow;
 		int selectedState;
 		std::string texcoordFilePath;
+
+		// each texture's file name
+		std::string textureFileArray[TextureManager::MAX_IMG];
+		// is texture loaded
+		bool textureLoaded[TextureManager::MAX_IMG];
 
 	private:
 		MainScene* targetScene;

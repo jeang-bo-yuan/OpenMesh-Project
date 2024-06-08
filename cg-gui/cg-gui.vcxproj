@@ -171,6 +171,7 @@ xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
     <ClCompile Include="..\include\imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="..\src\App\App.cpp" />
     <ClCompile Include="..\src\Mesh\MyMesh.cpp" />
+    <ClCompile Include="..\src\Mesh\TextureManager.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />
     <ClCompile Include="..\src\Scene\MainScene.cpp" />
     <ClCompile Include="..\src\Scene\SelectionRegion.cpp" />
@@ -187,6 +188,7 @@ xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
     <ClInclude Include="..\include\imgui\imgui_internal.h" />
     <ClInclude Include="..\src\App\App.h" />
     <ClInclude Include="..\src\Mesh\MyMesh.h" />
+    <ClInclude Include="..\src\Mesh\TextureManager.h" />
     <ClInclude Include="..\src\Scene\Camera.h" />
     <ClInclude Include="..\src\Scene\MainScene.h" />
     <ClInclude Include="..\src\Scene\SelectionRegion.h" />

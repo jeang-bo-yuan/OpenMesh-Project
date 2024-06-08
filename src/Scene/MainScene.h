@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "SelectionRegion.h"
 #include <Mesh/MyMesh.h>
+#include <Mesh/TextureManager.h>
 
 constexpr auto PARTSNUM = 18;
 
@@ -62,6 +63,8 @@ namespace CG
 
 		void LoadTexcoordFile(const std::string& file) { mesh->LoadTexCoord(file); }
 		void ExportTexcoordFile(const std::string& file) { mesh->ExportTexCoord(file); }
+
+		bool LoadImage(const std::string& file, int layer) { return m_tex_manager->LoadImage(file, layer); }
 
 	private:
 		auto LoadScene() -> bool;
@@ -123,6 +126,8 @@ namespace CG
 		Camera* camera;
 
 		MyMesh* mesh;
+
+		TextureManager* m_tex_manager;
 
 		SelectionRegion m_selection_region;
 	};

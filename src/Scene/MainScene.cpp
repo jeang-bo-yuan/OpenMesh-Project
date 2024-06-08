@@ -9,6 +9,7 @@ namespace CG
 	{
 		camera = nullptr;
 		mesh = nullptr;
+		m_tex_manager = nullptr;
 	}
 
 	MainScene::~MainScene()
@@ -65,6 +66,8 @@ namespace CG
 
 		glClearColor(0.0, 0.0, 0.0, 1); //black screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		m_tex_manager->BindTextureArray_0();
 
 		mesh->Render();
 
@@ -258,6 +261,8 @@ namespace CG
 
 		mesh = new MyMesh();
 		mesh->LoadFromFile("./res/models/xyzrgb_dragon_100k.obj");
+
+		m_tex_manager = new TextureManager();
 		
 		return true;
 	}

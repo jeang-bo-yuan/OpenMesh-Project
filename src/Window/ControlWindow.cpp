@@ -10,9 +10,13 @@
 namespace CG
 {
 	ControlWindow::ControlWindow()
-		: targetScene(nullptr), selectedState(0), texcoordFilePath("TexCoord.txt")
+		: targetScene(nullptr), selectedState(0), texcoordFilePath("TexCoord.txt"), textureLoaded{false}
 	{
 		showDemoWindow = false;
+
+		for (int i = 0; i < TextureManager::MAX_IMG; ++i) {
+			textureFileArray[i] = std::to_string(i).append(".png");
+		}
 	}
 
 	auto ControlWindow::Initialize() -> bool
@@ -42,7 +46,7 @@ namespace CG
 
 			ImGui::NewLine();
 			ImGui::Text("Texture Coordinate File:");
-			ImGui::InputText("file", &texcoordFilePath);
+			ImGui::InputText("##file", &texcoordFilePath);
 			if (ImGui::Button("Load")) targetScene->LoadTexcoordFile(texcoordFilePath);
 			ImGui::SameLine(170);
 			if (ImGui::Button("Export")) targetScene->ExportTexcoordFile(texcoordFilePath);
@@ -52,6 +56,30 @@ namespace CG
 				ImGui::Text("WASD - move camera   Q - move up");
 				ImGui::Text("E - move down        Scroll - Zoom in/out");
 				ImGui::Text("\nTexture Coordinate File is the file that store\nall the vertices' texture coordinate.");
+			}
+		}
+		ImGui::End();
+
+		ImGui::Begin("Texture Array");
+		{
+			ImGui::Text("You can load %d textures at most.", TextureManager::MAX_IMG);
+			ImGui::BulletText("Each texture should have size: %d * %d", TextureManager::IMG_SIZE, TextureManager::IMG_SIZE);
+
+			for (int i = 0; i < TextureManager::MAX_IMG; ++i) {
+				ImGui::PushID(i);
+				
+				if (textureLoaded[i])
+					ImGui::TextColored(ImVec4(0, 1, 0, 1), "%d", i);
+				else
+					ImGui::TextColored(ImVec4(1, 0, 0, 1), "%d", i);
+				
+				ImGui::SameLine();
+				ImGui::InputText("##file", textureFileArray + i);
+
+				ImGui::SameLine();
+				if (ImGui::Button("Load")) textureLoaded[i] = targetScene->LoadImage(textureFileArray[i], i);
+
+				ImGui::PopID();
 			}
 		}
 		ImGui::End();
