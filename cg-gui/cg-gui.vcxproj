@@ -168,6 +168,7 @@ xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
     <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\include\imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="..\src\App\App.cpp" />
     <ClCompile Include="..\src\Mesh\MyMesh.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />

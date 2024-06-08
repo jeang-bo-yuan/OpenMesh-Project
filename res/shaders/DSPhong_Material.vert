@@ -6,6 +6,7 @@
 
 layout(location = 0) in vec3 vPosition;
 layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in vec3 vTexCoord;
 
 vec3 vLightPosition = vec3(0, 10, 50);
 
@@ -18,6 +19,7 @@ uniform mat4 Model;
 // Color to fragment program
 out vec3 vVaryingNormal;
 out vec3 vVaryingLightDir;
+out vec3 vVaryingTexCoord;
 // output face's index, you can use index to lookup the array
 flat out uint vFaceIndex;
 
@@ -40,5 +42,6 @@ void main(void)
     // Don't forget to transform the geometry!
     gl_Position = MVP * vec4(vPosition, 1);
 
+    vVaryingTexCoord = vTexCoord;
     vFaceIndex = gl_VertexID / 3;
 }

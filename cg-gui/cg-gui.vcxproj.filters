@@ -44,6 +44,9 @@
     <ClCompile Include="..\src\Utilty\LoadShaders.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\include\imgui\misc\cpp\imgui_stdlib.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">

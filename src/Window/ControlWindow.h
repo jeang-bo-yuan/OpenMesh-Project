@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Scene/MainScene.h>
+#include <string>
 
 namespace CG
 {
@@ -15,6 +16,7 @@ namespace CG
 	private:
 		bool showDemoWindow;
 		int selectedState;
+		std::string texcoordFilePath;
 
 	private:
 		MainScene* targetScene;

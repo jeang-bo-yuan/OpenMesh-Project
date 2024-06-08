@@ -91,6 +91,47 @@ namespace CG
 		glUseProgram(0);
 	}
 
+	void MyMesh::LoadTexCoord(const std::string& filename)
+	{
+		std::ifstream input(filename);
+		if (!input.is_open()) {
+			std::cerr << "Cannot Open: " << filename << '\n';
+			return;
+		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, sVBOtexcoord);
+		glm::vec3* arr = reinterpret_cast<glm::vec3*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+
+		for (size_t i = 0; i < n_faces() * 3; ++i) {
+			input >> arr[i].x >> arr[i].y >> arr[i].z;
+		}
+
+		glUnmapBuffer(GL_ARRAY_BUFFER);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		std::cout << "Loading Texture Coordinate Succeeds!!" << std::endl;
+	}
+
+	void CG::MyMesh::ExportTexCoord(const std::string& filename)
+	{
+		std::ofstream out(filename);
+		if (!out.is_open()) {
+			std::cerr << "Cannot Open: " << filename << '\n';
+			return;
+		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, sVBOtexcoord);
+		glm::vec3* arr = reinterpret_cast<glm::vec3*>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY));
+
+		for (size_t i = 0; i < n_faces() * 3; ++i) {
+			out << arr[i].x << ' ' << arr[i].y << ' ' << arr[i].z << '\n';
+		}
+		out << std::flush;
+
+		glUnmapBuffer(GL_ARRAY_BUFFER);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		std::cout << "Exporting Texture Coordinate Succeeds!!" << std::endl;
+	}
+
 	void MyMesh::RenderFaceID()
 	{
 		glBindVertexArray(sVAO);
@@ -202,6 +243,17 @@ namespace CG
 		glBufferData(GL_ARRAY_BUFFER, face_normals.size() * sizeof(glm::vec3), glm::value_ptr(face_normals[0]), GL_STATIC_DRAW);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(1);
+
+		glGenBuffers(1, &sVBOtexcoord); // 存貼圖座標
+		glBindBuffer(GL_ARRAY_BUFFER, sVBOtexcoord);
+		glBufferData(GL_ARRAY_BUFFER, face_vertices.size() * sizeof(glm::vec3), NULL, GL_DYNAMIC_DRAW);
+		/* 設定初始值 */ {
+			glm::vec3* arr = reinterpret_cast<glm::vec3*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+			for (size_t i = 0; i < face_vertices.size(); ++i) arr[i] = glm::vec3(0, 0, -1); // default layer = -1
+			glUnmapBuffer(GL_ARRAY_BUFFER);
+		}
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(2);
 
 		// selected faces ssbo
 		glGenBuffers(1, &selectedSSBO);

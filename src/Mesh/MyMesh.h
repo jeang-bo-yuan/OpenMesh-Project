@@ -19,17 +19,32 @@ namespace CG
 		FaceAttributes(OpenMesh::Attributes::Normal);
 	};
 
+	/**
+	 * 模型
+	 */
 	class MyMesh : public OpenMesh::TriMesh_ArrayKernelT<MyTraits>
 	{
+		friend class TextureManager;
+
 	public:
 		MyMesh();
 		~MyMesh();
 
 		GLuint GetSelectedSSBO() { return selectedSSBO; }
 
+		/**
+		 * 從檔案載入模型
+		 * \param filename - 模型檔的名稱
+		 * \return 是否載入成功
+		 */
 		bool LoadFromFile(std::string filename);
 
 		void Render();
+
+		//! 從 filename 這個檔案載入貼圖座標
+		void LoadTexCoord(const std::string& filename);
+		//! 將貼圖座標匯出到 filename 這個檔案
+		void ExportTexCoord(const std::string& filename);
 
 		/**
 		 * 繪製每一面，顏色的 R channel 為面的ID (ID = 陣列中的index + 1)
@@ -87,6 +102,7 @@ namespace CG
 		GLuint sVAO;
 		GLuint sVBOp;
 		GLuint sVBOn;
+		GLuint sVBOtexcoord; //!< 貼圖座標
 
 		/* Buffers for wireframe rendering */
 		GLuint wVAO;

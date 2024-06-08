@@ -60,6 +60,9 @@ namespace CG
 
 		void UnselectAll() { mesh->UnselectAll(); }
 
+		void LoadTexcoordFile(const std::string& file) { mesh->LoadTexCoord(file); }
+		void ExportTexcoordFile(const std::string& file) { mesh->ExportTexCoord(file); }
+
 	private:
 		auto LoadScene() -> bool;
 
