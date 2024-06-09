@@ -24,6 +24,8 @@ namespace CG
 		// is texture loaded
 		bool textureLoaded[TextureManager::MAX_IMG];
 
+		int textureLayer = 0;
+
 	private:
 		MainScene* targetScene;
 

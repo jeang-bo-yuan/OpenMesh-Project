@@ -49,7 +49,7 @@ namespace CG {
 /////////Texture Parameterization////////////////////////////////////////////////////////////////
 	public:
 		//! 看哪些面被選中了並為這些面產生貼圖座標
-		//! @param layer - 使用哪一張貼圖（0 <= layer < MAX_IMG）
+		//! @param layer - 使用哪一張貼圖（-1 <= layer < MAX_IMG）
 		void GenTexCoord(int layer);
 	private:
 		//! 從m_origin_mesh_ptr中將選中的面複製進m_copied_mesh。回傳false，若沒有面被選中；反之回傳true
@@ -58,6 +58,8 @@ namespace CG {
 		void FindBoundaryAndSplit();
 		//! 解線性系統，以求出在邊界內的點的texcoord
 		void SolveLinearEquation();
+		//! 將算出來的texcoord寫入origin_mesh的VBO
+		void WriteResult(int layer);
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public:

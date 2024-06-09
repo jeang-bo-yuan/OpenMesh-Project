@@ -32,7 +32,7 @@ CG::TextureManager::TextureManager(MyMesh* mesh) : m_origin_mesh_ptr(mesh), m_co
 bool CG::TextureManager::LoadImage(const std::string& file, int layer)
 {
 	if (layer < 0 || layer >= MAX_IMG) {
-		std::cerr << "Invalid `layer` for TextureManager::LoadImage()\n";
+		std::cerr << "\x1B[31mInvalid `layer` for TextureManager::LoadImage()\n\x1B[m";
 		return false;
 	}
 
@@ -40,12 +40,12 @@ bool CG::TextureManager::LoadImage(const std::string& file, int layer)
 	unsigned char* img = stbi_load(file.c_str(), &width, &height, &channel, 3);
 
 	if (img == nullptr) {
-		std::cerr << "Cannot Load Image: " << file << '\n';
+		std::cerr << "\x1B[31mCannot Load Image: " << file << "\n\x1B[m";
 		return false;
 	}
 
 	if (width != IMG_SIZE || height != IMG_SIZE) {
-		std::cerr << "Image Size Should be " << IMG_SIZE << " * " << IMG_SIZE << '\n';
+		std::cerr << "\x1B[31mImage Size Should be " << IMG_SIZE << " * " << IMG_SIZE << "\n\x1B[m";
 		return false;
 	}
 
@@ -66,7 +66,7 @@ void CG::TextureManager::GenTexCoord(int layer)
 {
 	std::cout << "\n\x1B[32mGenerate Texture Coordinate with layer = " << layer << " ...\x1B[m" << std::endl;
 
-	if (layer < 0 || layer >= MAX_IMG) {
+	if (layer < -1 || layer >= MAX_IMG) {
 		std::cerr << "\x1B[31m== Invalid argument `layer` (with value = " << layer << ") for TextureManager::GenTexCoord()\x1B[m\n\n";
 		return;
 	}
@@ -80,6 +80,7 @@ void CG::TextureManager::GenTexCoord(int layer)
 	try {
 		FindBoundaryAndSplit();
 		SolveLinearEquation();
+		WriteResult(layer);
 	}
 	catch (std::runtime_error& ex) {
 		std::cerr << "\x1B[31m== " << ex.what() << "\x1B[m\n\n";
@@ -278,6 +279,30 @@ void CG::TextureManager::SolveLinearEquation()
 		std::cout << vh << " -> " << result << std::endl;
 #endif
 	}
+}
+
+void CG::TextureManager::WriteResult(int layer)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, m_origin_mesh_ptr->sVBOtexcoord);
+	glm::vec3* texcoord_vbo = reinterpret_cast<glm::vec3*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+	auto COPIED_face_origin = OpenMesh::FProp<int>(*m_copied_mesh, "face_origin");
+
+	// 一面一面寫入
+	for (auto face_it = m_copied_mesh->faces_sbegin(); face_it != m_copied_mesh->faces_end(); ++face_it) {
+		int face_origin = COPIED_face_origin[*face_it];
+
+		// 依序寫入面上的三個點的texcoord
+		int id = 0;
+		auto fv_it = m_copied_mesh->cfv_ccwbegin(*face_it);
+		for (; fv_it.is_valid(); ++fv_it) {
+			auto texcoord = m_copied_mesh->texcoord2D(*fv_it);
+			texcoord_vbo[face_origin * 3 + id] = glm::vec3(texcoord[0], texcoord[1], layer);
+			++id;
+		}
+	}
+
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 //

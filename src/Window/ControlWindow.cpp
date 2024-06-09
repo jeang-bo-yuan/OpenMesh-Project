@@ -45,17 +45,9 @@ namespace CG
 			targetScene->SetState((State)selectedState);
 
 			ImGui::NewLine();
-			ImGui::Text("Texture Coordinate File:");
-			ImGui::InputText("##file", &texcoordFilePath);
-			if (ImGui::Button("Load")) targetScene->LoadTexcoordFile(texcoordFilePath);
-			ImGui::SameLine(170);
-			if (ImGui::Button("Export")) targetScene->ExportTexcoordFile(texcoordFilePath);
-
-			ImGui::NewLine();
 			if (ImGui::CollapsingHeader("Tutorial")) {
 				ImGui::Text("WASD - move camera   Q - move up");
 				ImGui::Text("E - move down        Scroll - Zoom in/out");
-				ImGui::Text("\nTexture Coordinate File is the file that store\nall the vertices' texture coordinate.");
 			}
 		}
 		ImGui::End();
@@ -86,7 +78,20 @@ namespace CG
 
 		ImGui::Begin("Texture Parameterization");
 		{
-			if (ImGui::Button("Test")) targetScene->GenerateTexCoord(0);
+			ImGui::Text("Texture Coordinate File is the file that store\nall the vertices' texture coordinate.");
+			ImGui::Text("Texture Coordinate File:");
+			ImGui::InputText("##file", &texcoordFilePath);
+			if (ImGui::Button("Load")) targetScene->LoadTexcoordFile(texcoordFilePath);
+			ImGui::SameLine(170);
+			if (ImGui::Button("Export")) targetScene->ExportTexcoordFile(texcoordFilePath);
+
+			ImGui::NewLine();
+			ImGui::Text("Specify the source image to use.");
+			ImGui::BulletText("-1 means deleting texture coordinate.");
+			ImGui::InputInt("Texture Layer", &textureLayer);
+			textureLayer = glm::clamp(textureLayer, -1, TextureManager::MAX_IMG - 1);
+
+			if (ImGui::Button("Generate")) targetScene->GenerateTexCoord(textureLayer);
 		}
 		ImGui::End();
 
