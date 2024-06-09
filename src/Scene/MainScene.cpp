@@ -262,7 +262,7 @@ namespace CG
 		mesh = new MyMesh();
 		mesh->LoadFromFile("./res/models/xyzrgb_dragon_100k.obj");
 
-		m_tex_manager = new TextureManager();
+		m_tex_manager = new TextureManager(mesh);
 		
 		return true;
 	}

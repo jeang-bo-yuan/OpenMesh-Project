@@ -84,6 +84,12 @@ namespace CG
 		}
 		ImGui::End();
 
+		ImGui::Begin("Texture Parameterization");
+		{
+			if (ImGui::Button("Test")) targetScene->GenerateTexCoord(0);
+		}
+		ImGui::End();
+
 		// Show the big demo window or not (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 		if (showDemoWindow)
 			ImGui::ShowDemoWindow(&showDemoWindow);

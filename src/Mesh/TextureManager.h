@@ -1,12 +1,10 @@
 #pragma once
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 #include <optional>
+#include "MyMesh.h"
 #include <Utilty/LoadShaders.h>
 
 namespace CG {
-	// forward declaration
-	class MyMesh;
-
 	/**
 	 * 負責管理texture 2d array + 貼圖座標參數化
 	 */
@@ -18,13 +16,21 @@ namespace CG {
 		GLuint m_ebo;
 		GLuint m_program;*/
 		GLuint m_texture_array;
-		bool m_show_parameterization = false;
+
+		MyMesh* m_origin_mesh_ptr;
+
+		typedef OpenMesh::TriMesh_ArrayKernelT<CG::MyTraits> CopiedMesh_t;
+		std::optional<CopiedMesh_t> m_copied_mesh;
 
 	public:
 		static constexpr int MAX_IMG = 10;
 		static constexpr int IMG_SIZE = 720;
 
-		TextureManager();
+		/**
+		 * 建構子
+		 * \param mesh - 讓texture manager可以對mesh產生貼圖座標
+		 */
+		TextureManager(MyMesh* mesh);
 
 		/**
 		 * 載入一張圖片到texture array中
@@ -37,14 +43,19 @@ namespace CG {
 		//! bind to texture unit 0
 		void BindTextureArray_0();
 
-		/**
-		 * 看the_mesh中哪些面被選中了並為這些面產生貼圖座標
-		 * \param the_mesh
-		 */
-		//void GenerateTextureCoordinate(MyMesh& the_mesh);
+/////////Texture Parameterization////////////////////////////////////////////////////////////////
+	public:
+		//! 看哪些面被選中了並為這些面產生貼圖座標
+		//! @param layer - 使用哪一張貼圖（0 <= layer < MAX_IMG）
+		void GenTexCoord(int layer);
+	private:
+		//! 從m_origin_mesh_ptr中將選中的面複製進m_copied_mesh。回傳false，若沒有面被選中；反之回傳true
+		bool CopySelectedFaces();
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
-		////! 隱藏起來，直到 GenerateTextureCoordinate 時才會再顯示
-		//void HideResult() { m_show_parameterization = false; }
+	public:
+		//! 隱藏起來，直到 GenTexCoord 時才會再顯示
+		void HideResult() { m_copied_mesh = std::nullopt; }
 
 		//void RenderResult();
 	};

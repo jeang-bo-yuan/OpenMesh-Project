@@ -65,6 +65,7 @@ namespace CG
 		void ExportTexcoordFile(const std::string& file) { mesh->ExportTexCoord(file); }
 
 		bool LoadImage(const std::string& file, int layer) { return m_tex_manager->LoadImage(file, layer); }
+		void GenerateTexCoord(int layer) { m_tex_manager->GenTexCoord(layer); }
 
 	private:
 		auto LoadScene() -> bool;
