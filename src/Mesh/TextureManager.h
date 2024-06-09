@@ -56,6 +56,8 @@ namespace CG {
 		bool CopySelectedFaces();
 		//! 找到copied mesh中的邊界，為邊界上的點設定texcoord，並將所有點分成兩類（on_boundary和inside_boundary）
 		void FindBoundaryAndSplit();
+		//! 解線性系統，以求出在邊界內的點的texcoord
+		void SolveLinearEquation();
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public:

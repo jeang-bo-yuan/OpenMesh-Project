@@ -2,6 +2,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <OpenMesh/Core/Utils/PropertyManager.hh>
+#include <Eigen/Core>
+#include <Eigen/Sparse>
+#include <map>
 
 CG::TextureManager::TextureManager(MyMesh* mesh) : m_origin_mesh_ptr(mesh), m_copied_mesh(std::nullopt)
 {
@@ -76,6 +79,7 @@ void CG::TextureManager::GenTexCoord(int layer)
 
 	try {
 		FindBoundaryAndSplit();
+		SolveLinearEquation();
 	}
 	catch (std::runtime_error& ex) {
 		std::cerr << "\x1B[31m== " << ex.what() << "\x1B[m\n\n";
@@ -207,6 +211,72 @@ void CG::TextureManager::FindBoundaryAndSplit()
 			m_on_boundary.push_back(*it);
 		else
 			m_inside_boundary.push_back(*it);
+	}
+}
+
+void CG::TextureManager::SolveLinearEquation()
+{
+	std::cout << "\x1B[32mSolving Linear Equation...\x1B[m" << std::endl;
+
+	if (m_inside_boundary.size() == 0) return;
+
+	auto COPIED_weight = OpenMesh::EProp<float>(*m_copied_mesh, "weight");
+	Eigen::SparseMatrix<float> A(m_inside_boundary.size(), m_inside_boundary.size());
+	Eigen::MatrixXf B; 
+	B.resize(m_inside_boundary.size(), 2);
+	B.fill(0);
+
+	// 反查表，用來查詢vertex handle在inside_boundary的index
+	std::map<CopiedMesh_t::VertexHandle, size_t> inside_reverse_lookup;
+	for (size_t i = 0; i < m_inside_boundary.size(); ++i) {
+		inside_reverse_lookup[m_inside_boundary[i]] = i;
+	}
+
+	// for each vertex inside the boundary
+	for (size_t i = 0; i < m_inside_boundary.size(); ++i) {
+		float total_weight = 0.f;
+		auto curr_vh = m_inside_boundary[i];
+
+		// for each outgoing halfedge
+		for (auto oh_it = m_copied_mesh->voh_begin(curr_vh); oh_it.is_valid(); ++oh_it) {
+			auto v2_handle = m_copied_mesh->to_vertex_handle(*oh_it); // v2 的 handle
+			auto curr_eh = m_copied_mesh->edge_handle(*oh_it); // 目前在的邊
+			float weight = COPIED_weight[curr_eh]; // 邊的權重
+
+			total_weight += weight;
+
+			// 如果 v2 不在 m_inside_boundary 內（i.e. 它的texcoord是已知的）
+			if (inside_reverse_lookup.find(v2_handle) == inside_reverse_lookup.end()) {
+				auto v2_texcoord = m_copied_mesh->texcoord2D(v2_handle); // v2 的貼圖座標
+				B(i, 0) += weight * v2_texcoord[0];
+				B(i, 1) += weight * v2_texcoord[1];
+			}
+			// v2 在 m_inside_boundary 內
+			else {
+				size_t v2_idx = inside_reverse_lookup[v2_handle];
+				A.insert(i, v2_idx) = -weight;
+			}
+		}
+
+		A.insert(i, i) = total_weight;
+	}
+
+	A.makeCompressed();
+	Eigen::SparseQR<decltype(A), Eigen::COLAMDOrdering<int>> linearSolver;
+	linearSolver.compute(A);
+
+	Eigen::MatrixXf X;
+	X.resize(m_inside_boundary.size(), 2);
+	X = linearSolver.solve(B);
+
+	// store X into texcoord2D property
+	for (size_t i = 0; i < m_inside_boundary.size(); ++i) {
+		auto vh = m_inside_boundary[i];
+		CG::MyTraits::TexCoord2D result(X(i, 0), X(i, 1));
+		m_copied_mesh->set_texcoord2D(vh, result);
+#ifndef NDEBUG
+		std::cout << vh << " -> " << result << std::endl;
+#endif
 	}
 }
 
