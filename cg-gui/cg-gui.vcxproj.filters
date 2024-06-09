@@ -153,5 +153,11 @@
     <None Include="..\res\shaders\region.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\res\shaders\texture_plane.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\texture_plane.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

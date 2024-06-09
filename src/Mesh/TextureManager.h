@@ -12,10 +12,10 @@ namespace CG {
 	class TextureManager
 	{
 		// 用來繪製產生的結果
-		/*GLuint m_vao;
-		GLuint m_vbo;
-		GLuint m_ebo;
-		GLuint m_program;*/
+		GLuint m_vao;
+		GLuint m_vbo; // 存2D的texture座標
+		GLuint m_program;
+
 		GLuint m_texture_array;
 
 		MyMesh* m_origin_mesh_ptr;
@@ -66,6 +66,7 @@ namespace CG {
 		//! 隱藏起來，直到 GenTexCoord 時才會再顯示
 		void HideResult() { m_copied_mesh = std::nullopt; }
 
-		//void RenderResult();
+		//! 將結果繪製出來
+		void RenderResult();
 	};
 }

@@ -206,6 +206,8 @@ xcopy /SY "$(SolutionDir)res\" "$(OutputPath)res\"</Command>
     <None Include="..\res\shaders\region.vert" />
     <None Include="..\res\shaders\select_dot.frag" />
     <None Include="..\res\shaders\select_dot.vert" />
+    <None Include="..\res\shaders\texture_plane.frag" />
+    <None Include="..\res\shaders\texture_plane.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

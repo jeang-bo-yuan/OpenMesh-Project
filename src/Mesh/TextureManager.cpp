@@ -17,16 +17,20 @@ CG::TextureManager::TextureManager(MyMesh* mesh) : m_origin_mesh_ptr(mesh), m_co
 	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 
-	/*glGenVertexArrays(1, &m_vao);
+	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
-	glGenBuffers(1, &m_ebo);
 
 	ShaderInfo shader[] = {
 		{ GL_VERTEX_SHADER, "./res/shaders/texture_plane.vert" },
 		{ GL_FRAGMENT_SHADER, "./res/shaders/texture_plane.frag" },
 		{ GL_NONE, NULL }
 	};
-	m_program = LoadShaders(shader);*/
+	m_program = LoadShaders(shader);
+
+	glUseProgram(m_program);
+	glm::mat4 proj_matrix = glm::ortho<float>(-0.05, 1.05, -0.05, 1.05, -1, 1);
+	glUniformMatrix4fv(glGetUniformLocation(m_program, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(proj_matrix));
+	glUseProgram(0);
 }
 
 bool CG::TextureManager::LoadImage(const std::string& file, int layer)
@@ -283,9 +287,14 @@ void CG::TextureManager::SolveLinearEquation()
 
 void CG::TextureManager::WriteResult(int layer)
 {
+	glUseProgram(m_program);
+	glUniform1i(glGetUniformLocation(m_program, "layer"), layer);
+	glUseProgram(0);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_origin_mesh_ptr->sVBOtexcoord);
-	glm::vec3* texcoord_vbo = reinterpret_cast<glm::vec3*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+	glm::vec3* ORIGIN_texcoord_vbo = reinterpret_cast<glm::vec3*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
 	auto COPIED_face_origin = OpenMesh::FProp<int>(*m_copied_mesh, "face_origin");
+	std::vector<glm::vec2> vertices_texcoord; // 記錄每個點的texcoord
 
 	// 一面一面寫入
 	for (auto face_it = m_copied_mesh->faces_sbegin(); face_it != m_copied_mesh->faces_end(); ++face_it) {
@@ -296,19 +305,54 @@ void CG::TextureManager::WriteResult(int layer)
 		auto fv_it = m_copied_mesh->cfv_ccwbegin(*face_it);
 		for (; fv_it.is_valid(); ++fv_it) {
 			auto texcoord = m_copied_mesh->texcoord2D(*fv_it);
-			texcoord_vbo[face_origin * 3 + id] = glm::vec3(texcoord[0], texcoord[1], layer);
+			vertices_texcoord.emplace_back(texcoord[0], texcoord[1]);
+			ORIGIN_texcoord_vbo[face_origin * 3 + id] = glm::vec3(texcoord[0], texcoord[1], layer);
 			++id;
 		}
 	}
 
 	glUnmapBuffer(GL_ARRAY_BUFFER);
+
+	// 將vertices_texcoord存進texture manager自己的vbo
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices_texcoord.size() * sizeof(glm::vec2), vertices_texcoord.data(), GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-//
-//void CG::TextureManager::RenderResult()
-//{
-//	if (m_show_parameterization) {
-//		// Rendering
-//	}
-//}
+
+void CG::TextureManager::RenderResult()
+{
+	if (m_copied_mesh.has_value()) {
+		// clear part of the screen
+		glEnable(GL_SCISSOR_TEST);
+		glScissor(0, 0, 400, 200);
+		glClearColor(1, 1, 1, 1); // white
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDisable(GL_SCISSOR_TEST);
+
+		glDisable(GL_DEPTH_TEST);
+		glBindVertexArray(m_vao);
+		glUseProgram(m_program);
+
+		// Rendering
+		glUniform1i(glGetUniformLocation(m_program, "is_wireframe"), false);
+		glViewport(0, 0, 200, 200);
+		glDrawArrays(GL_TRIANGLES, 0, m_copied_mesh->n_faces() * 3);
+
+		// Render Wireframe
+		glUniform1i(glGetUniformLocation(m_program, "is_wireframe"), true);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glViewport(200, 0, 200, 200);
+		glDrawArrays(GL_TRIANGLES, 0, m_copied_mesh->n_faces() * 3);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glUseProgram(0);
+		glBindVertexArray(0);
+		glEnable(GL_DEPTH_TEST);
+	}
+}

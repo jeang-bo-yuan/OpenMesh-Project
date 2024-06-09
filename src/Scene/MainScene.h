@@ -39,7 +39,7 @@ namespace CG
 		void Render();
 
 		State GetState() const { return m_current_state; }
-		void SetState(State new_state) { m_current_state = new_state; }
+		void SetState(State new_state) { m_current_state = new_state; if (m_current_state != State::RotateCamera) m_tex_manager->HideResult(); }
 
 		//! 當改變視窗大小
 		void OnResize(int width, int height);
@@ -65,7 +65,7 @@ namespace CG
 		void ExportTexcoordFile(const std::string& file) { mesh->ExportTexCoord(file); }
 
 		bool LoadImage(const std::string& file, int layer) { return m_tex_manager->LoadImage(file, layer); }
-		void GenerateTexCoord(int layer) { m_tex_manager->GenTexCoord(layer); }
+		void GenerateTexCoord(int layer) { this->SetState(State::RotateCamera);  m_tex_manager->GenTexCoord(layer); }
 
 	private:
 		auto LoadScene() -> bool;

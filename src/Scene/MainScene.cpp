@@ -64,6 +64,7 @@ namespace CG
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(camera->GetViewMatrix()));
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera->GetProjectionMatrix()));
 
+		glViewport(0, 0, m_width, m_height);
 		glClearColor(0.0, 0.0, 0.0, 1); //black screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -89,6 +90,9 @@ namespace CG
 			m_selection_region.RenderAndSelect(GetCursorNDCPos(), m_faceID_fbo.color_texture, mesh->GetSelectedSSBO(), m_current_state == State::RegionSelectFace);
 			m_renderAndSelectInRegion = false;
 		}
+
+		// 繪製參數化結果
+		m_tex_manager->RenderResult();
 	}
 
 	void MainScene::OnResize(int width, int height)
