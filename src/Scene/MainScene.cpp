@@ -315,7 +315,7 @@ namespace CG
 		
 		if (faceID != 0) {
 #ifndef NDEBUG
-			std::cout << "MainScene Face: " << faceID << std::endl;
+			std::cout << "[] Face: " << faceID - 1 << std::endl;
 #endif
 			mesh->SelectFace(faceID - 1, selected);
 		}

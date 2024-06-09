@@ -164,14 +164,11 @@ namespace CG
 				nearest_dist = distance;
 				selectedPoint = (*it);
 			}
-#ifndef NDEBUG
-			std::cout << "\t[] candidate: " << tmp1 << " distance = " << distance << std::endl;
-#endif
 			++it;
 		}
 
 #ifndef NDEBUG
-		std::cout << "\t[] Position: " << glm::to_string(position) << ", Face: " << face_index << std::endl;
+		std::cout << "[] Mouse Position: " << glm::to_string(position) << ", Face: " << face_index << std::endl;
 		std::cout << "[] Point Selected: " << point(*selectedPoint) << std::endl;
 #endif
 	}
