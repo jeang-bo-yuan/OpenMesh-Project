@@ -37,11 +37,11 @@ namespace CG
 			ImGui::Text("Left Mouse: %s", StateName[selectedState]);
 
 			ImGui::RadioButton("Rotate Camera(1)", &selectedState, (int)State::RotateCamera);
-			ImGui::SameLine(170);  ImGui::RadioButton("Select Vertex(2)", &selectedState, (int)State::SelectVertex);
+			ImGui::SameLine(200);  ImGui::RadioButton("Select Vertex(2)", &selectedState, (int)State::SelectVertex);
 			ImGui::RadioButton("Select Face(3)", &selectedState, (int)State::SelectFace);
-			ImGui::SameLine(170);  ImGui::RadioButton("Unselect Face(4)", &selectedState, (int)State::UnselectFace);
+			ImGui::SameLine(200);  ImGui::RadioButton("Unselect Face(4)", &selectedState, (int)State::UnselectFace);
 			ImGui::RadioButton("Region Select(5)", &selectedState, (int)State::RegionSelectFace);
-			ImGui::SameLine(170);  ImGui::RadioButton("Region Unselect(6)", &selectedState, (int)State::RegionUnselectFace);
+			ImGui::SameLine(200);  ImGui::RadioButton("Region Unselect(6)", &selectedState, (int)State::RegionUnselectFace);
 			targetScene->SetState((State)selectedState);
 
 			ImGui::NewLine();
@@ -78,7 +78,6 @@ namespace CG
 
 		ImGui::Begin("Texture Parameterization");
 		{
-			ImGui::Text("Texture Coordinate File is the file that store\nall the vertices' texture coordinate.");
 			ImGui::Text("Texture Coordinate File:");
 			ImGui::InputText("##file", &texcoordFilePath);
 			if (ImGui::Button("Load")) targetScene->LoadTexcoordFile(texcoordFilePath);
@@ -86,7 +85,6 @@ namespace CG
 			if (ImGui::Button("Export")) targetScene->ExportTexcoordFile(texcoordFilePath);
 
 			ImGui::NewLine();
-			ImGui::Text("Specify the source image to use.");
 			ImGui::BulletText("-1 means deleting texture coordinate.");
 			ImGui::InputInt("Texture Layer", &textureLayer);
 			textureLayer = glm::clamp(textureLayer, -1, TextureManager::MAX_IMG - 1);
