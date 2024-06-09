@@ -3,6 +3,7 @@
 #include <optional>
 #include "MyMesh.h"
 #include <Utilty/LoadShaders.h>
+#include <vector>
 
 namespace CG {
 	/**
@@ -21,6 +22,8 @@ namespace CG {
 
 		typedef OpenMesh::TriMesh_ArrayKernelT<CG::MyTraits> CopiedMesh_t;
 		std::optional<CopiedMesh_t> m_copied_mesh;
+		std::vector<CopiedMesh_t::VertexHandle> m_on_boundary;
+		std::vector<CopiedMesh_t::VertexHandle> m_inside_boundary;
 
 	public:
 		static constexpr int MAX_IMG = 10;
@@ -51,6 +54,8 @@ namespace CG {
 	private:
 		//! 從m_origin_mesh_ptr中將選中的面複製進m_copied_mesh。回傳false，若沒有面被選中；反之回傳true
 		bool CopySelectedFaces();
+		//! 找到copied mesh中的邊界，為邊界上的點設定texcoord，並將所有點分成兩類（on_boundary和inside_boundary）
+		void FindBoundaryAndSplit();
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public:

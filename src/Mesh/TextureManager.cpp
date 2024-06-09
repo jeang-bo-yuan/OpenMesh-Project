@@ -2,7 +2,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <OpenMesh/Core/Utils/PropertyManager.hh>
-#include <vector>
 
 CG::TextureManager::TextureManager(MyMesh* mesh) : m_origin_mesh_ptr(mesh), m_copied_mesh(std::nullopt)
 {
@@ -75,6 +74,14 @@ void CG::TextureManager::GenTexCoord(int layer)
 		return;
 	}
 
+	try {
+		FindBoundaryAndSplit();
+	}
+	catch (std::runtime_error& ex) {
+		std::cerr << "\x1B[31m== " << ex.what() << "\x1B[m\n\n";
+		return;
+	}
+
 	std::cout << "\x1B[32mGenerating done!!\x1B[m\n\n" << std::flush;
 }
 
@@ -136,6 +143,71 @@ bool CG::TextureManager::CopySelectedFaces()
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	return m_copied_mesh->n_faces() != 0;
+}
+
+template<typename T>
+static typename T::HalfedgeHandle first_boundary_heh(T& mesh) {
+	for (auto it = mesh.halfedges_sbegin(); it != mesh.halfedges_end(); ++it) {
+		if (mesh.is_boundary(*it))
+			return *it;
+	}
+
+	throw std::runtime_error("No boundary");
+}
+
+void CG::TextureManager::FindBoundaryAndSplit()
+{
+	std::cout << "\x1B[32mFinding Boundary...\x1B[m" << std::endl;
+
+	float total_length = 0.f;
+	const CopiedMesh_t::HalfedgeHandle init_heh = first_boundary_heh(*m_copied_mesh);
+
+	// 繞boundary一圈，計算total_length
+	for (auto curr = init_heh; curr != init_heh || total_length == 0.f; curr = m_copied_mesh->next_halfedge_handle(curr)) {
+#ifndef NDEBUG
+		std::cout << m_copied_mesh->from_vertex_handle(curr) << ' ';
+#endif
+		total_length += m_copied_mesh->calc_edge_length(curr);
+	}
+#ifndef NDEBUG
+	std::cout << "are on boundary" << std::endl;
+#endif
+
+	// 設定texCoord（第一個）
+	const CopiedMesh_t::VertexHandle init_vh = m_copied_mesh->from_vertex_handle(init_heh);
+	m_copied_mesh->set_texcoord2D(init_vh, CG::MyTraits::TexCoord2D(0, 0));
+	// 其他的
+	float accumulate_len = m_copied_mesh->calc_edge_length(init_heh);
+	for (auto curr = m_copied_mesh->next_halfedge_handle(init_heh); curr != init_heh; curr = m_copied_mesh->next_halfedge_handle(curr)) {
+		float t = accumulate_len * 4.f / total_length; // 0 < t < 4
+		CG::MyTraits::TexCoord2D result(0, 0);
+		if (t <= 1.f)
+			result = CG::MyTraits::TexCoord2D(t      , 0.f);
+		else if (t <= 2.f)
+			result = CG::MyTraits::TexCoord2D(1.f    , t - 1.f);
+		else if (t <= 3.f)
+			result = CG::MyTraits::TexCoord2D(3.f - t, 1.f);
+		else
+			result = CG::MyTraits::TexCoord2D(0.f    , 4.f - t);
+
+#ifndef NDEBUG
+		std::cout << result << std::endl;
+#endif
+
+		auto curr_from = m_copied_mesh->from_vertex_handle(curr);
+		m_copied_mesh->set_texcoord2D(curr_from, result);
+		accumulate_len += m_copied_mesh->calc_edge_length(curr);
+	}
+
+	// split
+	m_on_boundary.clear();
+	m_inside_boundary.clear();
+	for (auto it = m_copied_mesh->vertices_sbegin(); it != m_copied_mesh->vertices_end(); ++it) {
+		if (m_copied_mesh->is_boundary(*it))
+			m_on_boundary.push_back(*it);
+		else
+			m_inside_boundary.push_back(*it);
+	}
 }
 
 //
