@@ -193,8 +193,9 @@ namespace CG
 		switch (m_current_state) {
 		case State::RotateCamera:
 			if (m_leftMouse) {
-				float xoffset = glm::radians(xpos - m_lastCursorPos.x);
-				float yoffset = glm::radians(ypos - m_lastCursorPos.y);
+				constexpr float sensitivity = 0.5;
+				float xoffset = glm::radians(xpos - m_lastCursorPos.x) * sensitivity;
+				float yoffset = glm::radians(ypos - m_lastCursorPos.y) * sensitivity;
 
 				camera->changeYawPitch(xoffset, yoffset);
 			}
