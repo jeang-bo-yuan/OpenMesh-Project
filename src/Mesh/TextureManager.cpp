@@ -100,7 +100,7 @@ bool CG::TextureManager::CopySelectedFaces()
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_origin_mesh_ptr->selectedSSBO);
 	int* selected_face_arr = reinterpret_cast<int*>(glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY));
 
-	auto ORIGIN_mapped_vertex = OpenMesh::VProp<int>(-1, *m_origin_mesh_ptr); // (temporary) 每個點對應到copied mesh中的哪個點
+	auto ORIGIN_mapped_vertex = OpenMesh::VProp<int>(-1, *m_origin_mesh_ptr); // (temporary) 每個點對應到copied mesh中的哪個點，-1代表沒有
 	auto ORIGIN_weight = OpenMesh::EProp<float>(*m_origin_mesh_ptr, "weight"); // origin mesh中每個邊的權重
 	auto COPIED_face_origin = OpenMesh::FProp<int>(*m_copied_mesh, "face_origin"); // copied mesh中每個面對應到origin mesh中哪個面
 	auto COPIED_weight = OpenMesh::EProp<float>(*m_copied_mesh, "weight"); // copied mesh中每個邊的權重
@@ -151,6 +151,27 @@ bool CG::TextureManager::CopySelectedFaces()
 
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	// 尋找該從哪個halfedge開始繞boundary一圈 /////////////////////////////////////////////////////////////////
+	m_boundary_start = CopiedMesh_t::InvalidHalfedgeHandle; // 先invalidate
+	const auto& ORIGIN_selected_point = m_origin_mesh_ptr->selectedPoint;
+	if (ORIGIN_selected_point.has_value() && ORIGIN_mapped_vertex[*ORIGIN_selected_point] != -1) { // 若有選中一點 且 該點位在選中的面上
+		// 選中的那點對應到copied mesh中的哪點
+		CopiedMesh_t::VertexHandle mapped_vhandle = m_copied_mesh->vertex_handle(ORIGIN_mapped_vertex[*ORIGIN_selected_point]);
+
+		if (m_copied_mesh->is_boundary(mapped_vhandle)) {
+			std::cout << "\x1B[33mUsing custom origin point...\x1B[m" << std::endl;
+
+			for (auto it = m_copied_mesh->voh_begin(mapped_vhandle); it.is_valid(); ++it) {
+				if (m_copied_mesh->is_boundary(*it)) {
+					m_boundary_start = *it;
+					break;
+				}
+			}
+		}
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	return m_copied_mesh->n_faces() != 0;
 }
 
@@ -169,7 +190,8 @@ void CG::TextureManager::FindBoundaryAndSplit()
 	std::cout << "\x1B[32mFinding Boundary...\x1B[m" << std::endl;
 
 	float total_length = 0.f;
-	const CopiedMesh_t::HalfedgeHandle init_heh = first_boundary_heh(*m_copied_mesh);
+	// 若有設定起始的halfedge則用設定的，否則隨機找
+	const CopiedMesh_t::HalfedgeHandle init_heh = (m_boundary_start.is_valid() ? m_boundary_start : first_boundary_heh(*m_copied_mesh));
 
 	// 繞boundary一圈，計算total_length
 	for (auto curr = init_heh; curr != init_heh || total_length == 0.f; curr = m_copied_mesh->next_halfedge_handle(curr)) {

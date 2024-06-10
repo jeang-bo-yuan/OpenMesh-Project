@@ -24,6 +24,8 @@ namespace CG {
 		std::optional<CopiedMesh_t> m_copied_mesh;
 		std::vector<CopiedMesh_t::VertexHandle> m_on_boundary;
 		std::vector<CopiedMesh_t::VertexHandle> m_inside_boundary;
+		// 在繞boundary一圈時要從哪開始
+		CopiedMesh_t::HalfedgeHandle m_boundary_start = CopiedMesh_t::InvalidHalfedgeHandle;
 
 	public:
 		static constexpr int MAX_IMG = 10;

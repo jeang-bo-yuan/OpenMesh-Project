@@ -91,6 +91,8 @@ namespace CG
 			textureLayer = glm::clamp(textureLayer, -1, TextureManager::MAX_IMG - 1);
 
 			if (ImGui::Button("Generate")) targetScene->GenerateTexCoord(textureLayer);
+
+			ImGui::BulletText("Use \"Select Vertex\" to select the origin.");
 		}
 		ImGui::End();
 
