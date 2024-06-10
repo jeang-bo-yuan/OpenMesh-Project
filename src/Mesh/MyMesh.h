@@ -75,6 +75,10 @@ namespace CG
 		 */
 		void UnselectAll();
 
+		/// 設定是否顯示輔助線
+		/// @param show - true->顯示，false->不顯示
+		void setShowLine(bool show) { showLine = show; }
+
 	private:
 		// 生成buffer
 		void CreateBuffers();
@@ -93,6 +97,8 @@ namespace CG
 	private:
 		/// 哪個點被選中了，std::nullopt -> 沒有
 		std::optional<MyMesh::VertexHandle> selectedPoint;
+		/// 是否顯示輔助線
+		bool showLine = true;
 
 		/* Shader Storage Buffer Objects */
 		/// 用來儲存哪個面有被選中的SSBO，包含 n_faces() 個 int

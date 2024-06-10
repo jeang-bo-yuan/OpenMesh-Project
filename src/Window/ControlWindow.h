@@ -16,6 +16,7 @@ namespace CG
 
 	private:
 		bool showDemoWindow;
+		bool showMeshLine = true;
 		int selectedState;
 		std::string texcoordFilePath;
 

@@ -60,6 +60,7 @@ namespace CG
 		void OnScroll(double xoffset, double yoffset);
 
 		void UnselectAll() { mesh->UnselectAll(); }
+		void ShowMeshLine(bool show) { mesh->setShowLine(show); }
 
 		void LoadTexcoordFile(const std::string& file) { mesh->LoadTexCoord(file); }
 		void ExportTexcoordFile(const std::string& file) { mesh->ExportTexCoord(file); }

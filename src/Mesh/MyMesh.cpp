@@ -66,15 +66,17 @@ namespace CG
 #pragma endregion
 
 #pragma region Wireframe Rendering
-		glUseProgram(programLine);
-		glBindVertexArray(wVAO);
+		if (showLine) {
+			glUseProgram(programLine);
+			glBindVertexArray(wVAO);
 
-		glUniformMatrix4fv(lModelID, 1, GL_FALSE, &model[0][0]);
-		glUniform3fv(lMatKdID, 1, &colorLine[0]);
+			glUniformMatrix4fv(lModelID, 1, GL_FALSE, &model[0][0]);
+			glUniform3fv(lMatKdID, 1, &colorLine[0]);
 
-		glLineWidth(1.5f);
-		// Draw wireframe mesh
-		glDrawArrays(GL_LINES, 0, this->n_edges() * 2);
+			glLineWidth(1.5f);
+			// Draw wireframe mesh
+			glDrawArrays(GL_LINES, 0, this->n_edges() * 2);
+		}
 #pragma endregion
 
 		if (selectedPoint.has_value()) {

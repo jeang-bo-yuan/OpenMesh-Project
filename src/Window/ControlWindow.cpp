@@ -29,6 +29,7 @@ namespace CG
 		ImGui::Begin("Control");
 		{
 			ImGui::Checkbox("Demo Window", &showDemoWindow);
+			ImGui::Checkbox("Show Mesh's Line", &showMeshLine); targetScene->ShowMeshLine(showMeshLine);
 			if (ImGui::Button("Unselect All")) targetScene->UnselectAll();
 			ImGui::NewLine();
 
