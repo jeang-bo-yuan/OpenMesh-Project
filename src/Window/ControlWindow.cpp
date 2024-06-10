@@ -83,11 +83,11 @@ namespace CG
 			ImGui::InputText("##file", &texcoordFilePath);
 			if (ImGui::Button("Load")) targetScene->LoadTexcoordFile(texcoordFilePath);
 			ImGui::SameLine(170);
-			if (ImGui::Button("Export")) targetScene->ExportTexcoordFile(texcoordFilePath);
+			if (ImGui::Button("Save")) targetScene->ExportTexcoordFile(texcoordFilePath);
 
 			ImGui::NewLine();
-			ImGui::BulletText("-1 means deleting texture coordinate.");
-			ImGui::InputInt("Texture Layer", &textureLayer);
+			ImGui::BulletText("-1 means no image.");
+			ImGui::InputInt("Image to Use", &textureLayer);
 			textureLayer = glm::clamp(textureLayer, -1, TextureManager::MAX_IMG - 1);
 
 			if (ImGui::Button("Generate")) targetScene->GenerateTexCoord(textureLayer);
