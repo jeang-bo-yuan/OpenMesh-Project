@@ -54,8 +54,8 @@ namespace CG {
 		//! @param layer - 使用哪一張貼圖（-1 <= layer < MAX_IMG）
 		void GenTexCoord(int layer);
 	private:
-		//! 從m_origin_mesh_ptr中將選中的面複製進m_copied_mesh。回傳false，若沒有面被選中；反之回傳true
-		bool CopySelectedFaces();
+		//! 從m_origin_mesh_ptr中將選中的面複製進m_copied_mesh
+		void CopySelectedFaces();
 		//! 找到copied mesh中的邊界，為邊界上的點設定texcoord，並將所有點分成兩類（on_boundary和inside_boundary）
 		void FindBoundaryAndSplit();
 		//! 解線性系統，以求出在邊界內的點的texcoord

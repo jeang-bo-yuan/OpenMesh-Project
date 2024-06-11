@@ -75,18 +75,14 @@ void CG::TextureManager::GenTexCoord(int layer)
 		return;
 	}
 
-	if (CopySelectedFaces() == false) {
-		m_copied_mesh = std::nullopt;
-		std::cerr << "\x1B[31m== Cannot generate texture coordinate when no faces are selected.\x1B[m\n\n";
-		return;
-	}
-
 	try {
+		CopySelectedFaces();
 		FindBoundaryAndSplit();
 		SolveLinearEquation();
 		WriteResult(layer);
 	}
 	catch (std::runtime_error& ex) {
+		m_copied_mesh = std::nullopt;
 		std::cerr << "\x1B[31m== " << ex.what() << "\x1B[m\n\n";
 		return;
 	}
@@ -94,7 +90,7 @@ void CG::TextureManager::GenTexCoord(int layer)
 	std::cout << "\x1B[32mGenerating done!!\x1B[m\n\n" << std::flush;
 }
 
-bool CG::TextureManager::CopySelectedFaces()
+void CG::TextureManager::CopySelectedFaces()
 {
 	m_copied_mesh.emplace();
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_origin_mesh_ptr->selectedSSBO);
@@ -172,7 +168,8 @@ bool CG::TextureManager::CopySelectedFaces()
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	return m_copied_mesh->n_faces() != 0;
+	if (m_copied_mesh->n_faces() == 0)
+		throw std::runtime_error("Cannot generate texture coordinate when no faces are selected.");
 }
 
 template<typename T>
